@@ -6,6 +6,7 @@
 
 - 포트폴리오: https://0378hajin.github.io/WebDemo/
 - AI Link: https://0378hajin.github.io/WebDemo/AILink.html
+- AI Link 실제 운영 서비스: https://www.ifa.co.kr/H026
 - MediCode: https://0378hajin.github.io/WebDemo/MediCode/Intro.html
 - VFA: https://0378hajin.github.io/WebDemo/VFA/Main.html
 
@@ -42,6 +43,8 @@ node server.js
 - 대화형 UI 상태와 사용자 동선 구현
 - AI 응답 데이터 표시
 - MediCode와 VFA 등 관련 서비스 메뉴 연계
+
+실제 운영 서비스는 iFA의 공식 서비스입니다. 본 포트폴리오는 담당한 프런트 화면과 사용자 상호작용을 설명하기 위한 별도 데모이며, 운영 서비스 전체 또는 AI 모델을 단독 개발했다는 의미가 아닙니다.
 
 ## MediCode
 
