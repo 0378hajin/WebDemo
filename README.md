@@ -2,12 +2,21 @@
 
 실무에서 개발한 MediCode와 VFA 화면 및 데이터 흐름을 개인정보와 운영 인증정보 없이 재구성한 정적 데모입니다.
 
+## 라이브 데모
+
+- 포트폴리오: https://0378hajin.github.io/WebDemo/
+- MediCode: https://0378hajin.github.io/WebDemo/MediCode/Intro.html
+- VFA: https://0378hajin.github.io/WebDemo/VFA/Main.html
+- 기존 서비스 포털: https://0378hajin.github.io/WebDemo/portal.html
+
 ## 폴더 구조
 
 ```text
 WebDemo/
 ├─ index.aspx          # 프로젝트의 서비스 시뮬레이터 원본
-├─ index.html          # 정적 데모용 서비스 시뮬레이터
+├─ index.html          # 이직용 포트폴리오 랜딩 페이지
+├─ portal.html         # 기존 정적 서비스 시뮬레이터
+├─ portfolio.css       # 랜딩 페이지 스타일
 ├─ server.js           # localhost 전용 정적 서버
 ├─ portal/             # 최상위 서비스 시뮬레이터 리소스
 ├─ MediCode/           # 건강검진·유전자 분석 데모
