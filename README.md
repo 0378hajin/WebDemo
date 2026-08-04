@@ -1,13 +1,13 @@
 # 금융·헬스케어 웹 서비스 포트폴리오
 
-실무에서 개발한 MediCode와 VFA 화면 및 데이터 흐름을 개인정보와 운영 인증정보 없이 재구성한 정적 데모입니다.
+실무에서 개발한 AI Link, MediCode, VFA의 화면 및 데이터 흐름을 개인정보와 운영 인증정보 없이 재구성한 정적 데모입니다.
 
 ## 라이브 데모
 
 - 포트폴리오: https://0378hajin.github.io/WebDemo/
+- AI Link: https://0378hajin.github.io/WebDemo/AILink.html
 - MediCode: https://0378hajin.github.io/WebDemo/MediCode/Intro.html
 - VFA: https://0378hajin.github.io/WebDemo/VFA/Main.html
-- 기존 서비스 포털: https://0378hajin.github.io/WebDemo/portal.html
 
 ## 폴더 구조
 
@@ -15,7 +15,8 @@
 WebDemo/
 ├─ index.aspx          # 프로젝트의 서비스 시뮬레이터 원본
 ├─ index.html          # 이직용 포트폴리오 랜딩 페이지
-├─ portal.html         # 기존 정적 서비스 시뮬레이터
+├─ AILink.html         # AI Link 질문·응답 서비스 데모
+├─ portal.html         # AI Link 호환 주소
 ├─ portfolio.css       # 랜딩 페이지 스타일
 ├─ server.js           # localhost 전용 정적 서버
 ├─ portal/             # 최상위 서비스 시뮬레이터 리소스
@@ -32,6 +33,15 @@ node server.js
 ```
 
 브라우저에서 `http://127.0.0.1:8080`으로 접속합니다. JSON 데이터를 `fetch`로 읽기 때문에 HTML 파일을 직접 더블 클릭하지 않고 로컬 서버를 사용해야 합니다.
+
+## AI Link
+
+사용자가 질문을 입력하고 AI 응답을 확인하며 관련 서비스를 탐색하는 대화형 서비스입니다. 담당 범위는 AI 모델이나 답변 생성 엔진이 아닌 프런트 화면과 사용자 상호작용 구현입니다.
+
+- 질문 입력 및 응답 결과 화면 구성
+- 대화형 UI 상태와 사용자 동선 구현
+- AI 응답 데이터 표시
+- MediCode와 VFA 등 관련 서비스 메뉴 연계
 
 ## MediCode
 
