@@ -3,7 +3,7 @@
 ```text
 건강검진·유전자 원천 데이터
         ↓
-SQL Server Stored Procedure
+MS-SQL Stored Procedure
         ↓
 위험도 점수와 등급 계산
         ↓
