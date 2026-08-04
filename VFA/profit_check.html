@@ -1,0 +1,743 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="assets/CSS/reset.css" rel="stylesheet" />
+    <link href="assets/CSS/vfa.css" rel="stylesheet" />
+    <link href="assets/CSS/loading.css" rel="stylesheet" />
+    
+
+    
+    <title>VFA X iMLife</title>
+    <script src="vendor/Scripts/vue@2.3.3/vue.min.js"></script>
+    <script src="vendor/Styles/version/lib/jquery/jquery.min.js"></script>
+    <script src="vendor/Styles/js/common.js"></script>
+    <script src="Scripts/vfa-mock-api.js"></script>
+    
+</head>
+<body>
+    <form id="form1">
+        <input type="hidden" id="hdnMemberId" value="demo.vfa@example.com">
+        <div id="divVFA" v-show="showSetup">
+            
+            <div class="wrap main step" v-show="step===0" v-bind:class="{on: step===0}">
+                <div class="header">
+                    <div>
+                    </div>
+                    <p class="m_title_b">맞춤형 펀드 설정</p>
+                    <div class="df">
+                        <img src="assets/Images/ic_close.svg" class="ic_close" v-on:click="closeAndReturn()" />
+                    </div>
+                </div>
+                <div class="sec ">
+                    <p class="sum_title_b">
+                        맞춤형 로보어드바이저<br />
+                        펀드 추천을 위해<br />
+                        <span class="c_green">간단한 설정을 진행해 주세요.</span>
+                    </p>
+                    <img src="assets/Images/main_img10.svg" class="main_img10" />
+                    <p class="c_55 m_text_l">고객님의 투자 성향과 은퇴 계획을 반영해 위험자산 비중을 자동으로 조절하는 맞춤형 포트폴리오를 만들어드립니다. 설문은 간단하며, 설정이 완료되면 정기적으로 펀드를 추천 받을 수 있습니다.</p>
+                </div>
+                <div class="fix_wrap">
+                    <div>
+                        <div class="btn1 c_fff l_title_b" v-on:click="startIfReady()">시작하기</div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="wrap main step" v-show="step===1 && (!memberHasGender || !memberHasBirth)" v-bind:class="{on: step===1 && (!memberHasGender || !memberHasBirth)}">
+                <div class="header">
+                    <div>
+                        <img src="assets/Images/ic_back.svg" v-on:click="prevStep()" />
+                    </div>
+                    <p class="m_title_b">맞춤형 펀드 설정</p>
+                    <div class="df">
+                        <img src="assets/Images/ic_close.svg" class="ic_close" v-on:click="closeAndReturn()" />
+                    </div>
+                </div>
+                <div class="sec dfBox">
+
+                    <div>
+                        <ul class="stepBox bm30">
+                            <li>
+                                <p class="progress on"></p>
+                            </li>
+                            <li>
+                                <p class="progress "></p>
+                            </li>
+                            <li>
+                                <p class="progress "></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                        </ul>
+                        <p class="lg_title_b bm10">해당 상품의 가입 목적을 선택해 주세요.</p>
+                        <p class="c_55 m_text_l bm35">목적에 맞게 자산 비중과 운용 전략을 조정합니다.</p>
+
+                        <div class="form_toggle df_radio ">
+                            <div class="form_radio_btn l_title_l">
+                                <input id="step101" type="radio" name="step1" value="option1" checked v-model="answers.step1" v-bind:disabled="memberHasGender" />
+                                <label for="step101">남성</label>
+                            </div>
+
+                            <div class="form_radio_btn l_title_l">
+                                <input id="step102" type="radio" name="step1" value="option2" v-model="answers.step1" v-bind:disabled="memberHasGender" />
+                                <label for="step102">여성</label>
+                            </div>
+                        </div>
+                        <div v-if="needsBirthInput" class="bm40">
+                            <div  class="input_old bm10">
+                                <input type="number" class="l_title_l" placeholder="생년월일 입력(6자리)" v-model="answers.cus_birth" inputmode="numeric" maxlength="6" />
+                            </div>
+                            <p class="c_red2 m_text_l" v-if="!birthValid && answers.cus_birth && answers.cus_birth.length>0">유효한 생년월일(6자리)을 입력하세요.</p>
+
+                        </div>
+                        <div v-else class="input_old bm40">
+                            <p class="l_title_l">생년월일: <span v-text="answers.cus_birth"></span></p>
+                        </div>
+                    </div>
+                    <div class="spacer"></div>
+
+                    <div class="infoWrap">
+                        <p class="bm5 lg_text_b">고객님 정보</p>
+                        <ul class="infoBox ">
+                            <li>
+                                <p class="lg_text_l">성함</p>
+                                <p class="lg_text_b" v-text="memberName"></p>
+                            </li>
+                            <li>
+                                <p class="lg_text_l">성별</p>
+                                <p class="lg_text_b" v-text="genderLabel"></p>
+                            </li>
+                            <li>
+                                <p class="lg_text_l">보험나이</p>
+                                <p class="lg_text_b c_green" v-text="insuranceAgeLabel"></p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                    <div class="fix_wrap">
+
+                        <div class="btn1 c_fff l_title_b" v-on:click="nextStepClick()">다음</div>
+                </div>
+            </div>
+            
+            <div class="wrap main step" v-show="step===2" v-bind:class="{on: step===2}">
+                <div class="header">
+                    <div>
+                        <img src="assets/Images/ic_back.svg" v-on:click="prevStep()" />
+                    </div>
+                    <p class="m_title_b">맞춤형 펀드 설정</p>
+                    <div class="df">
+                        <img src="assets/Images/ic_close.svg" class="ic_close" v-on:click="closeAndReturn()" />
+                    </div>
+                </div>
+                <div class="sec ">
+                    <ul class="stepBox bm30">
+                        <li class="on">
+                            <p class="progress "></p>
+                        </li>
+                        <li>
+                            <p class="progress on"></p>
+                        </li>
+                        <li>
+                            <p class="progress"></p>
+                        </li>
+                        <li>
+                            <p class="progress"></p>
+                        </li>
+                        <li>
+                            <p class="progress"></p>
+                        </li>
+                        <li>
+                            <p class="progress"></p>
+                        </li>
+                        <li>
+                            <p class="progress"></p>
+                        </li>
+                    </ul>
+                    <p class="lg_title_b bm10">시장 변동성에 대해 어떻게 느끼시나요?</p>
+                    <p class="c_55 m_text_l bm35">고객님의 위험 감내도를 파악해 펀드 비중 조정을 돕습니다.</p>
+
+
+                    <div class="form_toggle">
+                        <div class="form_radio_btn l_title_l">
+                                <input id="step201" type="radio" name="step2" value="option1" checked v-model="answers.step2">
+                            <label for="step201">큰 변동이 생기면 불안해요.</label>
+                        </div>
+
+                        <div class="form_radio_btn l_title_l">
+                                <input id="step202" type="radio" name="step2" value="option2" v-model="answers.step2">
+                            <label for="step202">어느 정도 변동은 괜찮아요.</label>
+                        </div>
+                        <div class="form_radio_btn l_title_l">
+                                <input id="step203" type="radio" name="step2" value="option3" v-model="answers.step2">
+                            <label for="step203">수익을 위해 변동성은 감수할 수 있어요.</label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="fix_wrap">
+                    <div class="btn1 c_fff l_title_b" v-on:click="nextStep()">다음</div>
+                </div>
+            </div>
+            
+            <div class="wrap main step" v-show="step===3" v-bind:class="{on: step===3}">
+                <div class="header">
+                        <div>
+                            <img src="assets/Images/ic_back.svg" v-on:click="prevStep()" />
+                        </div>
+                        <p class="m_title_b">맞춤형 펀드 설정</p>
+                        <div class="df">
+                            <img src="assets/Images/ic_close.svg" class="ic_close" v-on:click="closeAndReturn()" />
+                        </div>
+                    </div>
+                <div class="sec ">
+                    <ul class="stepBox bm30">
+                        <li class="on">
+                            <p class="progress "></p>
+                        </li>
+                        <li class="on">
+                            <p class="progress "></p>
+                        </li>
+                        <li>
+                            <p class="progress on"></p>
+                        </li>
+                        <li>
+                            <p class="progress"></p>
+                        </li>
+                        <li>
+                            <p class="progress"></p>
+                        </li>
+                        <li>
+                            <p class="progress"></p>
+                        </li>
+                        <li>
+                            <p class="progress"></p>
+                        </li>
+                    </ul>
+                    <p class="lg_title_b bm10">손실이 발생하면 어떻게 대응하시나요?</p>
+                    <p class="c_55 m_text_l bm35">고객님의 투자 성향을 분석하는 중요한 항목입니다.</p>
+
+
+                    <div class="form_toggle">
+                        <div class="form_radio_btn l_title_l">
+                                <input id="step301" type="radio" name="step3" value="option1" checked v-model="answers.step3">
+                            <label for="step301">손실이 나면 줄이거나 매도하고 싶어요.</label>
+                        </div>
+
+                        <div class="form_radio_btn l_title_l">
+                                <input id="step302" type="radio" name="step3" value="option2" v-model="answers.step3">
+                            <label for="step302">손실이 나도 일정 기간 유지해요.</label>
+                        </div>
+                        <div class="form_radio_btn l_title_l">
+                                <input id="step303" type="radio" name="step3" value="option3" v-model="answers.step3">
+                            <label for="step303">손실이 나도 추가 매수를 고려해요.</label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="fix_wrap">
+                    <div class="btn1 c_fff l_title_b" v-on:click="nextStep()">다음</div>
+                </div>
+            </div>
+
+            
+            <div class="wrap main step" v-show="step===4" v-bind:class="{on: step===4}">
+                <div class="header">
+                    <div>
+                        <img src="assets/Images/ic_back.svg" v-on:click="prevStep()" />
+                    </div>
+                    <p class="m_title_b">맞춤형 펀드 설정</p>
+                    <div class="df">
+                        <img src="assets/Images/ic_close.svg" class="ic_close" v-on:click="closeAndReturn()" />
+                    </div>
+                </div>
+                <div class="sec dfBox">
+
+                    <div>
+                        <ul class="stepBox bm30">
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li>
+                                <p class="progress on"></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                        </ul>
+                        <p class="lg_title_b bm10">해당 상품의 가입 목적을 선택해 주세요.</p>
+                        <p class="c_55 m_text_l bm35">목적에 맞게 자산 비중과 운용 전략을 조정합니다.</p>
+
+
+                        <div class="form_toggle bm40">
+                            <div class="form_radio_btn l_title_l">
+                                <input id="step401" type="radio" name="step4" value="option1" checked v-model="answers.step4">
+                                <label for="step401">노후 연금자산 마련</label>
+                            </div>
+
+                            <div class="form_radio_btn l_title_l">
+                                <input id="step402" type="radio" name="step4" value="option2" v-model="answers.step4">
+                                <label for="step402">목돈 마련·기타 자금 활용</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="spacer"></div>
+
+                    <div class="infoWrap">
+                        <p class="bm5 lg_text_b">상품 정보</p>
+
+                        <div class="infoBox_wrap bm10">
+                            <ul class="infoBox ">
+                                <li>
+                                    <p class="lg_text_l">보험사</p>
+                                    <p class="lg_text_b" v-text="corpName"></p>
+                                </li>
+                                <li>
+                                    <p class="lg_text_l">상품명</p>
+                                    <p class="lg_text_b" v-text="itemName"></p>
+                                </li>
+                                <li>
+                                    <p class="lg_text_l">계약일</p>
+                                    <p class="lg_text_b" v-text="contractDate"></p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                    <div class="fix_wrap">
+
+                    <div class="btn1 c_fff l_title_b" v-on:click="nextStepClick()">다음</div>
+                </div>
+            </div>
+
+            
+            <div class="wrap main step" v-show="step===5" v-bind:class="{on: step===5}">
+                <div class="header">
+                    <div>
+                        <img src="assets/Images/ic_back.svg" v-on:click="prevStep()" />
+                    </div>
+                    <p class="m_title_b">맞춤형 펀드 설정</p>
+                    <div class="df">
+                        <img src="assets/Images/ic_close.svg" class="ic_close" v-on:click="closeAndReturn()" />
+                    </div>
+                </div>
+                <div class="sec dfBox">
+
+                    <div>
+                        <ul class="stepBox bm30">
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li>
+                                <p class="progress on"></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                        </ul>
+                        <p class="lg_title_b bm10">은퇴 시점을 선택해주세요.</p>
+                        <p class="c_55 m_text_l bm35">은퇴까지 남은 기간에 따라 위험자산 비중을 자동 최적화합니다.</p>
+
+                        <div class="form_toggle df_radio">
+                            <div class="form_radio_btn l_title_l">
+                                <input id="step501" type="radio" name="step5" value="option1" v-model="answers.step5">
+                                <label for="step501">60세</label>
+                            </div>
+                            <div class="form_radio_btn l_title_l">
+                                <input id="step502" type="radio" name="step5" value="option2" checked v-model="answers.step5">
+                                <label for="step502">65세</label>
+                            </div>
+                            <div class="form_radio_btn l_title_l">
+                                <input id="step503" type="radio" name="step5" value="option3" v-model="answers.step5">
+                                <label for="step503">70세</label>
+                            </div>
+                        </div>
+                        <div class="input_old bm40">
+                            <input type="number" class="l_title_l" v-model="answers.step5_custom" v-on:focus="answers.step5 = null" />
+                            <p class="l_title_l c_aa">세</p>
+                        </div>
+
+                    </div>
+                    <div class="spacer"></div>
+
+                    <div class="infoWrap">
+                        <p class="bm5 lg_text_b">고객님 정보</p>
+                        <ul class="infoBox ">
+                            <li>
+                                <p class="lg_text_l">성함</p>
+                                <p class="lg_text_b" v-text="memberName"></p>
+                            </li>
+                            <li>
+                                <p class="lg_text_l">보험나이</p>
+                                <p class="lg_text_b" v-text="insuranceAgeLabel"></p>
+                            </li>
+                            <li>
+                                <p class="lg_text_l" v-text="remainingPeriodTitle"></p>
+                                <p class="lg_text_b c_green" v-text="retirementRemainingLabel"></p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="fix_wrap">
+
+                    <div class="btn1 c_fff l_title_b" v-on:click="nextStep()">다음</div>
+                </div>
+            </div>
+
+            
+            <div class="wrap main step" v-show="step===6" v-bind:class="{on: step===6}">
+                <div class="header">
+                    <div>
+                        <img src="assets/Images/ic_back.svg" v-on:click="prevStep()" />
+                    </div>
+                    <p class="m_title_b">맞춤형 펀드 설정</p>
+                    <div class="df">
+                        <img src="assets/Images/ic_close.svg" class="ic_close" v-on:click="closeAndReturn()" />
+                    </div>
+                </div>
+                <div class="sec dfBox">
+
+                    <div>
+                        <ul class="stepBox bm30">
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li>
+                                <p class="progress on"></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                        </ul>
+                        <p class="lg_title_b bm10">목돈 마련·기타 자금 사용 시점을 선택해 주세요.</p>
+                        <p class="c_55 m_text_l bm35">자금 사용 시점에 따라 위험자산 비중을 자동 최적화합니다.</p>
+                            <div class="form_toggle df_radio">
+                                <div class="form_radio_btn l_title_l">
+                                    <input id="step504" type="radio" name="step5" value="option4" v-model="answers.step5">
+                                    <label for="step504">60세</label>
+                                </div>
+
+                                <div class="form_radio_btn l_title_l">
+                                    <input id="step505" type="radio" name="step5" value="option5" checked v-model="answers.step5">
+                                    <label for="step505">65세</label>
+                                </div>
+                                <div class="form_radio_btn l_title_l">
+                                    <input id="step506" type="radio" name="step5" value="option6" v-model="answers.step5">
+                                    <label for="step506">70세</label>
+                                </div>
+                            </div>
+                            <div class="input_old bm40">
+                            <input type="number" class="l_title_l" v-model="answers.step5_custom" v-on:focus="answers.step5 = null" />
+                            <p class="l_title_l c_aa">세</p>
+                        </div>
+
+                    </div>
+                    <div class="spacer"></div>
+
+                    <div class="infoWrap">
+                        <p class="bm5 lg_text_b">고객님 정보</p>
+                        <ul class="infoBox ">
+                            <li>
+                                <p class="lg_text_l">성함</p>
+                                <p class="lg_text_b" v-text="memberName"></p>
+                            </li>
+                            <li>
+                                <p class="lg_text_l">현재 나이</p>
+                                <p class="lg_text_b" v-text="insuranceAgeLabel"></p>
+                            </li>
+                            <li>
+                                <p class="lg_text_l" v-text="remainingPeriodTitle"></p>
+                                <p class="lg_text_b c_green" v-text="retirementRemainingLabel"></p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="fix_wrap">
+
+                    <div class="btn1 c_fff l_title_b" v-on:click="nextStep()">다음</div>
+                </div>
+            </div>
+
+
+            
+            <div class="wrap main step" v-show="step===7" v-bind:class="{on: step===7}">
+                <div class="header">
+                    <div>
+                        <img src="assets/Images/ic_back.svg" v-on:click="prevStep()" />
+                    </div>
+                    <p class="m_title_b">맞춤형 펀드 설정</p>
+                    <div class="df">
+                        <img src="assets/Images/ic_close.svg" class="ic_close" v-on:click="closeAndReturn()" />
+                    </div>
+                </div>
+                <div class="sec dfBox">
+
+                    <div>
+                        <ul class="stepBox bm30">
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li>
+                                <p class="progress on"></p>
+                            </li>
+                            <li>
+                                <p class="progress"></p>
+                            </li>
+                        </ul>
+                        <p class="lg_title_b bm35">원하는 투자운용 방식을 선택해주세요.</p>
+
+                        <div class="form_toggle bm40">
+                            <div class="form_radio_btn l_title_m">
+                                <input id="step601" type="radio" name="step6" value="option1" checked v-model="answers.step6">
+                                    <label for="step601">
+                                    자동 배분 조절형 (글라이드패스 적용)<br />
+                                    <span class="m_text_l" v-text="investmentMethodDetail"></span></label>
+                            </div>
+
+                            <div class="form_radio_btn l_title_l">
+                                <input id="step602" type="radio" name="step6" value="option2" v-model="answers.step6">
+                                <label for="step602">
+                                    고정 배분 운용형(글라이드패스 미 적용)<br />
+                                    <span class="m_text_l">알고리즘 추천 포트폴리오 비중을 유지하며 보다 공격적으로 운용합니다.</span></label>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="spacer"></div>
+
+                    <div class="infoWrap">
+                        <p class="bm5 lg_text_b">고객님 분석 결과</p>
+                        <ul class="infoBox ">
+                            <li>
+                                <p class="lg_text_l">투자 성향</p>
+                                <p class="lg_text_b" v-text="investmentProfileLabel"></p>
+                            </li>
+                            <li>
+                                <p class="lg_text_l" v-text="remainingPeriodTitle"></p>
+                                <p class="lg_text_b c_green" v-text="retirementRemainingLabel"></p>
+                            </li>
+                            <li>
+                                <div class="lg_text_l">
+                                    추천 전략
+                                    <img src="assets/Images/ic_popup.svg" class="ic_popup" v-on:click="showGlidePopup()" />
+                                </div>
+                                <p class="lg_text_b c_green" v-text="recommendationLabel"></p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="fix_wrap">
+
+                    <div class="btn1 c_fff l_title_b" v-on:click="nextStep()">다음</div>
+                </div>
+            </div>
+
+            
+            <div class="wrap main step" v-show="step===8" v-bind:class="{on: step===8}">
+                <div class="header">
+                    <div>
+                        <img src="assets/Images/ic_back.svg" v-on:click="prevStep()" />
+                    </div>
+                    <p class="m_title_b">맞춤형 펀드 설정</p>
+                    <div class="df">
+                        <img src="assets/Images/ic_close.svg" class="ic_close" v-on:click="closeAndReturn()" />
+                    </div>
+                </div>
+                <div class="sec dfBox">
+
+                    <div>
+                        <ul class="stepBox bm30">
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li class="on">
+                                <p class="progress "></p>
+                            </li>
+                            <li>
+                                <p class="progress on"></p>
+                            </li>
+                        </ul>
+                        <p class="lg_title_b bm35">펀드 리밸런싱 신호 발생 시 카카오톡으로 안내드릴까요?</p>
+
+                        <div class="form_toggle bm40">
+                            <div class="form_radio_btn l_title_m">
+                                <input id="step701" type="radio" name="step7" value="option1" checked v-model="answers.step7">
+                                <label for="step701">네, 카카오톡 알림을 수신합니다 (추천)</label>
+                            </div>
+
+                            <div class="form_radio_btn l_title_l">
+                                <input id="step702" type="radio" name="step7" value="option2" v-model="answers.step7">
+                                <label for="step702">아니오</label>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="spacer"></div>
+
+                    <div class="infoWrap">
+                        <p class="bm5 lg_text_b">리밸런싱 안내</p>
+                        <ul class="infoBox ">
+                            <li>
+                                <p class="lg_text_l">리밸런싱 주기</p>
+                                <p class="lg_text_b c_green">90일(고정)</p>
+                            </li>
+                            <li>
+                                <p class="m_text_l">RA 알고리즘은 90일 간격으로 리밸런싱 했을 때 가장 안정적이면서도 높은 성과를 보여왔기 때문에, 해당 주기로 포트폴리오를 정기 점검해 안내드립니다.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="fix_wrap">
+
+                    <div class="btn1 c_fff l_title_b" v-on:click="finishAndShowAlert($event)">저장 후 완료</div>
+                </div>
+            </div>
+
+            
+            <div class="wrap main loading  " v-show="step===9" v-bind:class="{on: step===9}">
+                <div class="sec dfBox">
+
+                    <div class="loadingBox">
+                        <img src="assets/Images/loading_img1.svg" />
+                        <ul class="loading">
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                        <img src="assets/Images/loading_img2.svg" />
+                    </div>
+                    <p class="tac subtext_m tm20 ">알고리즘이<Br />고객님에게 최적화된 펀드를<br />생성하고 있어요</p>
+                    <div class="spacer"></div>
+                    <div class="loading_info">
+                        <img src="assets/Images/intro_img6.svg" class="bm20" />
+                        <p class="c_33 m_text_l tac">금융위원회 테스트베드를 통과한 DNA 알고리즘을 기반으로 RAI 자문사에서 제공합니다.</p>
+                    </div>
+                </div>
+            </div>
+        
+       
+            
+            <div class="popup_wrap " v-show="popup.glideInfo">
+                <div class="p_box">
+                    <div class="titBox">
+                        <p class="l_title_b bm10">글라이드 패스란 ?</p>
+                        <p class="c_55 m_text_l bm10">고객님의 나이와 은퇴까지 남은 기간에 맞춰, 주식·채권 비중을 점진적으로 조절하는 투자 방식입니다. 은퇴가 가까워질수록 위험을 줄이고, 멀수록 기회를 높이는 구조입니다.</p>
+                        <div class="txtBox_b_gray bm20">
+                            <p class="lg_text_l bm10">은퇴 시점이 가까워질수록 주식 비중을 줄여, 최대 손실 폭을 줄임으로써 손실 회복 기간이 짧아지도록 하는거죠!</p>
+                            <img src="assets/Images/intro_img4.svg" class="intro_img4" />
+                            <img src="assets/Images/intro_img5.svg" class="intro_img5" />
+                        </div>
+                        <p class="title_b bm10">적용하면 어떤 변화가 생기나요?</p>
+                        <p class="m_text_l c_55 bm30">알고리즘이 생성하는 포트폴리오를 바탕으로 위험자산·안전자산 비중만 자동으로 최적화합니다.(자동 리스크 관리 기능 )</p>
+                        <p class="title_b bm10">적용하지 않아도 될까요?</p>
+                        <p class="m_text_l c_55 bm30"><span class="c_green">네, 가능합니다.</span> 더 적극적으로 운용해 수익기회를 높이고 싶으시다면 ‘기본 운용형(글라이드패스 미적용)’도 선택하실 수 있습니다.</p>
+                    </div>
+
+                    <div class="fixBox">
+                        <div class="innerBox">
+                            <div class="btn4 c_fff l_title_b" v-on:click="closeGlidePopup()">닫기</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="popup_wrap " v-show="popup.alert">
+                <div class="p_box alert">
+                    <div class="innerBox">
+                        <p class="l_title_b tac">맞춤형 펀드 설정이 완료되었습니다.<Br />해당 상품의 추천 펀드를 확인해보세요.</p>
+                    </div>
+                    <div class="innerBox">
+                        <div class="df_btn">
+                            <div class="btn4 c_fff l_title_b" v-on:click="closeAlertPopup()" tabindex="0">확인</div>
+                        </div>
+                    </div>
+        
+                </div>
+            </div>
+        </div>
+     </form>
+    <script type="text/javascript" src="Scripts/profit_check.js"></script>
+</body>
+</html>

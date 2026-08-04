@@ -1,0 +1,20 @@
+﻿button.health_btn,
+button.gen_btn,
+button.medi_btn,
+button.g_btn {
+    width: 100%;
+    border: 0;
+    font: inherit;
+    text-align: inherit;
+    cursor: pointer;
+}
+
+button.health_btn,
+button.gen_btn,
+button.medi_btn {
+    display: block;
+}
+
+button:disabled {
+    cursor: default;
+}

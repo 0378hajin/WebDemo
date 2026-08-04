@@ -1,0 +1,49 @@
+﻿html,
+body,
+form,
+.health-image-wrap {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.health-image-wrap {
+    position: relative;
+}
+
+.health-image {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.image-link {
+    position: absolute;
+    z-index: 1;
+    display: block;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.back-link {
+    top: 2.5%;
+    left: 2.5%;
+    width: 13%;
+    height: 6.5%;
+}
+
+.analysis-link {
+    top: 75.8%;
+    left: 5.5%;
+    width: 89%;
+    height: 9%;
+}
+
+.report-link {
+    top: 89.8%;
+    left: 4.5%;
+    width: 91%;
+    height: 6.5%;
+}

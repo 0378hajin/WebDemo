@@ -1,0 +1,836 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="index.aspx.cs" Inherits="ifa.co.kr.Example.index" %>
+<%@ Register Src="~/MobileHome/WebControl_Footer.ascx" TagName="WebUserControl_Footer" TagPrefix="uc1" %>
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, target-densitydpi=medium-dpi, user-scalable=yes, viewport-fit=cover" />
+    <link href="/MobileHome/_Common/reset.css?v=<%=DateTime.Now.ToString("yyyyMMddHHmmss") %>" rel="stylesheet"/>
+    <link href="/MobileHome/_Common/mobilehome2.css?v=<%=DateTime.Now.ToString("yyyyMMddHHmmss") %>" rel="stylesheet"/>
+    <link href="/MobileHome/_Common/ai.css?v=<%=DateTime.Now.ToString("yyyyMMddHHmmss") %>" rel="stylesheet"/>
+    <script src="/Scripts/vue@2.3.3/vue.min.js"></script>
+    <script src="/MobileHome/_Common/common2.js?v=<%=DateTime.Now.ToString("yyyyMMddHHmmss") %>"></script>
+    <script src="/Scripts/common.js?v=<%=DateTime.Now.ToString("yyyyMMddHHmmss") %>"></script>
+    <script src="/MobileHome/_Common/ai.js?v=<%=DateTime.Now.ToString("yyyyMMddHHmmss") %>"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <style>
+        * {
+            font-family: 'suite', "Malgun Gothic", 'Apple SD Gothic Neo', "돋움", sans-serif !important;
+        }
+    </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-17D7PK7QXR"></script>
+    <script>
+        const ua = navigator.userAgent.toLowerCase();
+        const targetUrl = location.href;
+
+        function showBrowserSuccess() {
+            let divKakao = document.getElementById("divKakao");
+            if (divKakao != null) divKakao.style.display = "none";
+
+            let divBrowser = document.getElementById("divBrowser");
+            if (divBrowser != null) divBrowser.style.display = "block";
+        }
+
+        function openExternal() {
+            if (!ua.includes("kakaotalk")) {
+                showBrowserSuccess();
+                return;
+            }
+
+            const isIOS = /iphone|ipad|ipod/.test(ua);
+            const isAndroid = /android/.test(ua);
+
+            if (isIOS) {
+                location.href =
+                    "kakaotalk://web/openExternal?url=" + encodeURIComponent(targetUrl);
+                return;
+            }
+
+            if (isAndroid) {
+                const url = new URL(targetUrl);
+                const scheme = url.protocol.replace(":", "");
+                const path = `${url.host}${url.pathname}${url.search}`;
+
+                location.href =
+                    `intent://${path}` +
+                    `#Intent;scheme=${scheme};package=com.android.chrome;` +
+                    `S.browser_fallback_url=${encodeURIComponent(targetUrl)};end`;
+                return;
+            }
+        }
+
+        window.addEventListener("load", function () {
+            if (!ua.includes("kakaotalk")) {
+                showBrowserSuccess();
+                return;
+            }
+
+            // 자동 시도는 보조 수단. 실패하면 버튼을 누르게 둠.
+            openExternal();
+        });
+    </script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-17D7PK7QXR');
+    </script>
+    <title>iFA Ai Link</title>
+    <link rel="icon" href="/Images/favicon2.png"/>
+    <style>
+        .kakao_out_btn_wrap {
+            position: fixed;
+            right: 16px;
+            bottom: 90px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .kakao_out_btn {
+            background: #00b750;
+            color: #fff;
+            padding: 13px 18px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.22);
+        }
+
+        .kakao_out_txt {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+            background: rgba(255,255,255,0.95);
+            padding: 8px 10px;
+            border-radius: 10px;
+            line-height: 1.4;
+            max-width: 220px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <asp:HiddenField ID="shrid" runat="server" />
+        <asp:HiddenField ID="sID" runat="server" />
+        <asp:HiddenField ID="sIP" runat="server" />
+        <div id="divVue" class="wrap" v-cloak="">
+            <header>
+                <div class="c_bundle bundle1 text_unit_b">
+                    <div class="c_list">
+                        <a :href="`/Example/index.aspx?hrid=${hrid}`">
+                            <img src="../Images/ai/logo_00b750.png" />
+                        </a>
+                    </div>
+                </div>
+                    <div style="font-size:20px;font-weight: 700;">서비스 시뮬레이터</div>
+                <div class="c_bundle bundle2">
+                </div>
+            </header>
+            <div class="kakao_out_btn_wrap" v-if="isKakao">
+                <div class="kakao_out_btn" onclick="openExternal()">
+                    외부 브라우저로 열기
+                </div>
+
+                <p class="kakao_out_txt">
+                    자동으로 열리지 않으면 우측 상단 메뉴에서 “다른 브라우저로 열기”를 선택해 주세요.
+                </p>
+            </div>
+            <div class="pages " v-show="tab === 0">
+                <div class="main_wrap">
+                    <div>
+                        <div class="introBox">
+                            <p class="l_title_m">안녕하세요. {{info.member_name}}의 AI입니다.</p>
+                            <div class="sum_title_b tm3 bm25">무엇을 도와드릴까요?</div>
+                        </div>
+                        <div>
+                            <ul class="q_list m_text_l ">
+                                <li @click="showStaticAnswer('medicode')">
+                                    <img src="/Images/ai/ai_menu4.png" alt="메디코드"/>
+                                    건강검진과 유전자로 질병 예측하기
+                                </li>
+                                <li @click="showStaticAnswer('vfa')">
+                                    <img src="/Images/ai/ai_menu5.png" alt="VFA"/>
+                                    내가 가입한 보험 확인하기
+                                </li>
+                                <li @click="showStaticAnswer('claim')">
+                                    <img src="/Images/ai/ai_menu6.png" alt="보험금 청구"/>
+                                    병원 보험금 청구 방법 알아보기
+                                </li>
+                                <li @click="showStaticAnswer('direct')">
+                                    <img src="/Images/ai/ai_menu7.png" alt="다이렉트 보험"/>
+                                    온라인 보험 가입 알아보기
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="ai_searchBox">
+                        <input id="search_key1" type="search" class="search_key" autocomplete="off" placeholder="질문을 입력해주세요." v-model="question" />
+                        <div class="search">
+                            <img src="../Images/ai/ai_search.svg" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai_chat" v-show="tab === 1" ref="aiChatWrap">
+                <div class="ai_chat_item" v-for="(item, index) in chatBotItems" :key="index">
+                    <div class="ai_q">
+                        <div class="ai_q_item title_m">{{ item.question }}</div>
+                    </div>
+                    <div class="ai_a">
+                        <div class="ai_a_profile">
+                            <div class="answer_df">
+                                <div :class="['progress-circle', 'step-' + (item.answer_code >= 4 ? 5 : item.answer_code)]">
+                                    <svg viewBox="0 0 100 100">
+                                        <circle class="bg" cx="50" cy="50" r="45"></circle>
+                                        <circle class="progress" cx="50" cy="50" r="45"></circle>
+                                    </svg>
+                                </div>
+                                <p class="answer_header l_title_m">답변</p>
+                            </div>
+
+
+                            <div class="c_88 tm10 l_text_2l" v-if="item.answer_code <= 4">{{item.answer}}</div>
+
+                            <!-- 안쪽 v-for 제거 -->
+                            <div class="ai_a_item answer" v-if="item.answer_code >= 8">
+                                <div class="answer_question lg_text_m">{{ item.question }}</div>
+                                <div class="answer_contents l_text_l tm20 c_33">
+                                    <span :ref="'ref_chat_' + index" v-html="answerItem(index)"></span>
+                                </div>
+                                
+                            </div>
+                            <div class="scut_list" v-if="Number(shortCutVis) === 0 && item.answer_code == 10 && apps.some(app => Number(app.step) === index + 1)">
+                                <ul class="s_list l_text_2l c_750">
+                                    <li v-for="app in apps.filter(a => Number(a.step) === index + 1)" :key="app.app_name">
+                                        <a :href="app.app_url" :target="app.blank_yn === '1' ? '_blank' : ''">{{ app.app_name }} 바로가기
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="follow_wrap" v-if="item.answer_code == 10 && item.follow_show">
+                                <p class="followtit lg_text_m">연관 검색어</p>
+                                <div @click="chatBotApi(item2.question)" class="ai_a_follow l_text_l" v-for="(item2, index2) in item.followitems" :key="index2">
+                                    <div>{{ item2.question }}</div>
+                                    <img src="../images/ai/ai_arrow_green.png" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ai_searchBox fixed">
+                    <input id="search_key2" type="search" class="search_key" autocomplete="off" placeholder="질문을 입력해주세요." v-model="question2"/>
+                    <div class="search">
+                        <img src="../Images/ai/ai_search.svg" />
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- footer_start -->
+            <footer>
+                <!-- 하단메뉴 -->
+                <div id="footerMenu" class="footer">
+                    <div id="DivIndex" class="menu">
+                        <a href="#">Ai</a>
+                    </div>
+                    <div id="DivInsu" class="menu">
+                        <a href="#">내보험</a>
+                    </div>
+                    <div id="DivMedi" class="menu">
+                        <a :href="`/Example/MediCode/intro.aspx?hrid=${hrid}`">메디코드</a>
+                    </div>
+                    <div id="DivFund" class="menu">
+                        <a :href="`/Example/VFA/intro.aspx?hrid=${hrid}`">펀드추천</a>
+                    </div>
+                    <div id="DivService" class="menu">
+                        <a href="#">서비스</a>
+                    </div>
+                </div>
+                <!--// 하단메뉴-->
+            </footer>
+            <!-- footer_end -->
+        </div>
+    </form>
+    <script>
+        class AIorcaChat {
+            question = "";
+            answer = "";
+            answered = false;
+            answer_date = "";
+            displayed = false;
+            datumitems = [];
+            displayed = false;
+            question_date = new Date().yyyyMMddHHmmss();
+            chat_id = "";
+            reply = true;
+            followitems = [];
+            follow_show = true;
+            answer_code = 0;
+
+            constructor(question) {
+                this.question = question;
+                this.question_date = new Date().yyyyMMddHHmmss();
+                this.answered = false;
+                this.displayed = false;
+                this.answer_code = 0;
+            }
+        }
+
+
+        var vm = new Vue({
+            el: "#divVue",
+            data: {
+                hrid: 'F000',
+                mohomeid: '',
+                member_id: '',
+                ip: '',
+
+                tab: 0,
+
+                //init item
+                error: false,
+                info: [],
+                dept_name: '',
+                member_info: [],
+                appList: [],
+                position: '',
+                questionItems: [],
+                questionguideitems: [],
+                isMoreOpen: false,
+
+                //Ai 채팅관련
+                question: '',
+                question2: '',
+                apps: [],
+                answering: false,
+                chatBotItems: [],
+                session_id: "",
+                workflow_id: "",
+                ai_chat: undefined,
+                callCount: 0,
+
+
+                //qr
+                qrLayer: false,
+
+                //naver 로그인 시 
+                code: '',
+                state: '',
+
+                shortCutVis: 0,
+                isKakao: navigator.userAgent.toLowerCase().includes("kakaotalk"),
+            },
+            created() {
+                const visible = new URLSearchParams(location.search).get("visible");
+                this.shortCutVis = visible === null ? 0 : Number(visible);
+
+                //this.hrid = new URLSearchParams(location.search).get("hrid");
+                this.mohomeid = document.getElementById("shrid").value;
+                this.member_id = document.getElementById("sID").value;
+                this.ip = document.getElementById("sIP").value;
+                this.code = new URLSearchParams(location.search).get("code");
+                this.state = new URLSearchParams(location.search).get("state");
+
+                this.init();
+            },
+            methods: {
+
+                showStaticAnswer(type) {
+                    const answers = {
+                        medicode: {
+                            question: '건강검진과 유전자로 질병 예측하기',
+                            answer: '메디코드에서 건강검진 결과와 유전자 정보를 바탕으로 질병 위험을 확인할 수 있습니다.',
+                            appName: '메디코드',
+                            appUrl: '/MobileHome/MediCode/Intro.aspx?hrid=' + this.hrid
+                        },
+                        vfa: {
+                            question: '내가 가입한 보험 확인하기',
+                            answer: 'VFA에서 가입한 보험과 변액보험 펀드 정보를 확인할 수 있습니다.',
+                            appName: 'VFA',
+                            appUrl: '/MobileHome/VFA/Intro.aspx?hrid=' + this.hrid
+                        },
+                        claim: {
+                            question: '병원 보험금 청구 방법 알아보기',
+                            answer: '병원에서 발급받은 진료비 영수증과 필요한 서류를 준비한 뒤 가입한 보험사의 보험금 청구 서비스를 이용해 주세요.'
+                        },
+                        direct: {
+                            question: '온라인 보험 가입 알아보기',
+                            answer: '온라인 보험은 필요한 보장을 비교하고 본인 인증과 고지 절차를 거쳐 가입할 수 있습니다.'
+                        }
+                    };
+
+                    const selected = answers[type];
+                    if (!selected) return;
+
+                    this.chatBotItems = [{
+                        question: selected.question,
+                        answer: selected.answer,
+                        answer_code: 10,
+                        answered: true,
+                        follow_show: false,
+                        followitems: []
+                    }];
+
+                    this.apps = selected.appName ? [{
+                        app_name: selected.appName,
+                        app_url: selected.appUrl,
+                        blank_yn: '0',
+                        step: 1
+                    }] : [];
+
+                    this.tab = 1;
+                    this.$nextTick(this.scrollToBottom);
+                },
+
+                async getNaverToken(code, state) {
+                    console.log(code);
+                    console.log(state);
+                    var url = "https://localhost:44367/MobileHome/index.aspx?hrid=" + this.hrid;
+                    try {
+                        const response = await fetch(url, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ code, state }),
+                        });
+                        const data = await response.json();
+
+                        console.log(" 로그인 성공:", data);
+                        // 로그인 완료 후 페이지 이동 등
+                        this.$router.push("/");
+                    } catch (e) {
+                        console.error(e);
+                    }
+                },
+
+                async init() {
+                    await this.intro_info();
+                    await this.getmemberInfo();
+                },
+
+                loadAISessionIdCreate: async function (event) {
+                    setCookie("bearer", "");
+
+                    var json = {
+                        "orca_id": "1",
+                        "url": window.location.href
+                    };
+
+                    if (this.member_id.trim() != '') {
+                        json["member_id"] = this.member_id;
+                    }
+
+                    var params = JSON.stringify(json);
+
+                    HttpAiPost(params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                var item = json.item;
+
+                                if (this.member_id != '') {
+                                    var bearer_token = item.bearer_token;
+                                    setCookie("bearer", "bearer_token=" + bearer_token);
+                                }
+
+                                var session_id = item.session_id || "";
+                                if (session_id != "") {
+                                    this.session_id = session_id;
+                                }
+
+                                var workflow_id = item.workflow_id || "";
+                                if (workflow_id != "") {
+                                    this.workflow_id = workflow_id;
+                                }
+                            } else {
+                                console.log("fail", json);
+                            }
+                        })
+                        .catch((error) => VueAlert(error));
+                },
+                async intro_info() {
+                    this.error = true;
+
+                    var params = JSON.stringify({
+                        target: 'Mohom',
+                        cmd: 'MobileHomeMemberInfo',
+                        hrid: this.hrid,
+                    });
+
+                    httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                if (json.items.length > 0) {
+                                    this.error = false;
+
+                                    this.info = json.items[0];
+                                    this.info.member_mobile = this.hrid === 'F000' || this.hrid === 'f000' || this.hrid === 'F001' || this.hrid === 'f001' ? '1544-8141' : this.info.member_mobile;
+                                    //this.setTitle(this.info.member_name);
+                                    if (!this.info) {
+                                        alert("해당 사번의 인사정보가 없습니다.");
+                                        location.href = "/";
+                                    } else {
+                                        this.position = this.GetCorpPosition(this.info.corp_jop_position, this.info.corp_level);
+                                        this.firstName = this.info.member_name.substring(1);
+                                        this.lastName = this.info.member_name.substring(0, 1);
+                                        this.setTitle(this.info.member_name);
+                                        let deptName = this.info.dept_name;
+                                        const ifaRegex = /iFA|IFA/i; // 대소문자 구분 없이 'iFA' 또는 'IFA' 검색
+
+                                        // 빈값으로 설정할 corp_hr_id 목록
+                                        const invalidHrIds = [
+                                            'F000', 'F001', 'F102', 'S375', 'P007', 'S398', 'S397', 'S402',
+                                            'S405', 'S481', 'S275', 'F400', 'F603', 'S401', 'S400', 'H009'
+                                        ];
+
+                                        // corp_hr_id가 invalidHrIds 배열에 포함되면 deptName을 빈값으로 설정
+                                        if (invalidHrIds.includes(this.info.corp_hr_id)) {
+                                            deptName = '';
+                                        } else if (!ifaRegex.test(deptName)) {
+                                            deptName = `${deptName}`;
+                                        }
+
+                                        this.dept_name = deptName.replace(/\(.*?\)/g, '');
+                                    }
+                                }
+                            } else {
+                                alert(json.msg);
+                            }
+                        })
+                        .catch((error) => VueAlert(error));
+                },
+
+                async getmemberInfo() {
+                    var params = JSON.stringify({
+                        target: "ONENew", cmd: "MemberInfo"
+                    });
+
+                    httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.member_info = json.items[0];
+                            } else { alert(json.msg); }
+                        })
+                        .catch((error) => VueAlert(error));
+                },
+
+                async getAppList() {
+                    var params = JSON.stringify({
+                        target: 'Mohom',
+                        cmd: 'MobileHomeAppsList',
+                    });
+
+                    httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.appList = json.items;
+                            } else { alert(json.msg); }
+                        })
+                        .catch((error) => VueAlert(error));
+                },
+
+                GetCorpPosition(corp_jop_position, corp_level) {
+
+                    var corp_position = corp_jop_position;
+                    switch (corp_position) {
+                        case "":
+                        case "없음":
+                        case "사용안함":
+                            corp_position = corp_level;
+                            break;
+                        default:
+                            break;
+                    }
+                    return corp_position;
+                },
+
+                setTitle(name) {
+
+                    const selectedTitle = name + '의 Ai Link';
+                    document.title = selectedTitle;
+                },
+
+                qrLayerPopup() {
+                    this.qrLayer = !this.qrLayer
+
+                },
+
+                loadAIFetch: async function (question) {
+                    var last_index = this.chatBotItems.length - 1;
+                    var json = {
+                        orca_id: 1,
+                        session_id: this.session_id,
+                        workflow_id: this.workflow_id,
+                        question: question,
+                        client_ip: this.ip,
+                        corp_hr_id: this.hrid
+                    };
+
+                    if (this.member_id.trim() != '') {
+                        json["member_id"] = this.member_id;
+                    }
+
+                    var params = JSON.stringify(json);
+                    //console.log(params);
+                    await newHttpEventStream(urlAIFetch, params, this.session, this.workflow_id, this.chatBotItems[last_index]).then((json) => {
+                        this.ai_chat.scrollTop = this.ai_chat.scrollHeight;
+                        this.createObserver();
+
+                    }).catch((error) => VueAlert(error));
+                    this.answering = false;
+                },
+
+                chatBotApi(val) {
+                    //console.log(val);
+                    if (this.tab === 0)
+                        this.tab = 1;
+                    this.answering = true;
+                    var chat = new AIorcaChat(val);
+                    this.chatBotItems.push(chat);
+                    this.loadAIFetch(val);
+
+                },
+
+                answerItem(idx) {
+                    var item = this.chatBotItems[idx];
+                    let answer_code = this.parseInt(item.answer_code);
+                    let answer_text = item.answer;
+
+                    switch (answer_code) {
+                        case 0:
+                            answer_text = this.loading_chat;
+                            break;
+                        default:
+                            //answer_text = AddAiHtml(AddTelLink(item.answer));
+                            answer_text = ParseAIMarkdownToHtml(AddTelLink(item.answer));
+                            break;
+                    }
+
+                    return answer_text;
+                },
+
+                questionGuide(val) {
+                    this.question = val;
+                    this.questionSearch();
+                },
+
+                questionSearch() { //메인메뉴에서 검색시
+                    this.loading_chat;
+                    if (this.question == '') {
+                        alert("검색어를 입력해주세요");
+                        return;
+                    }
+                    let params = JSON.stringify({ target: "Mohom", cmd: "MobileHomeSearch", question: this.question });
+
+                    httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.callCount += 1;
+                                const stepValue = this.callCount;
+
+                                this.apps = [];
+
+                                var items = json.items;
+                                console.log(items);
+                                for (let i = 0; i < items.length; i++) {
+                                    items[i].step = stepValue;
+                                    items[i].app_url = this.goUrl(items[i]);
+                                    this.apps.push(items[i]);
+                                }
+                                this.tab = 1;
+
+                                this.chatBotApi(this.question);
+
+                            } else {
+                                alert(json.msg);
+                            }
+                        })
+                        .catch((error) => VueAlert(error));
+                },
+                questionSearch2() { //Ai 채팅 1회 이상 후 재질문 시
+
+                    if (!this.answering) {
+                        if (this.question2 == '') {
+                            alert("검색어를 입력해주세요");
+                            return;
+                        }
+                        this.isLoading = true;
+                        let params = JSON.stringify({ target: "Mohom", cmd: "MobileHomeSearch", question: this.question2 });
+
+                        httpPost(urlReturnJsonAPI, params)
+                            .then((json) => {
+                                if (json.result == 1) {
+                                    this.callCount += 1;
+                                    const stepValue = this.callCount;
+
+                                    var items = json.items;
+                                    for (let i = 0; i < items.length; i++) {
+                                        items[i].step = stepValue;
+                                        items[i].app_url = this.goUrl(items[i]);
+                                        this.apps.push(items[i]);
+                                    };
+
+                                    this.question = this.question2;
+                                    this.question2 = '';
+                                    this.chatBotApi(this.question);
+                                } else {
+                                    alert(json.msg);
+                                }
+                            })
+                            .catch((error) => VueAlert(error));
+                    }
+
+                },
+
+                createObserver() {
+                    const target = document.querySelector('.ai_chat');
+                    const observer = new ResizeObserver((entries) => {
+                        entries.forEach((e) => {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                        });
+                    });
+                    observer.observe(target);
+                },
+
+                loadQuestionGuide: async function (event) {
+                    var params = JSON.stringify({ target: "HR", cmd: "QuestionGuide", orca_id: 1 });
+
+                    httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                let items = json.items;
+
+                                this.questionguideitems = items;
+                            } else { VueAlert(json.msg); }
+                        })
+                        .catch((error) => VueAlert(error));
+                },
+
+                async getQuestionData() {
+                    let params = JSON.stringify({ target: "Mohom", cmd: "MobileHomeQuestionList" });
+
+                    httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.questionItems = json.items;
+                            } else { alert(json.msg); }
+                        })
+                        .catch((error) => VueAlert(error));
+                },
+
+                goUrl(item) {
+
+                    let keyWord = '';
+
+                    //모홈, 다이렉트, 상속증여 계산기
+                    //각각 파라미터가 안붙거나 
+                    //붙어도 형식이 다 달라서 분기
+                    if (item.app_name === "상속증여 계산기" || item.app_name === '마이페이지') {     //상속증여 계산기
+                        return `${item.app_url}${this.hrid}`;
+                    } else if (item.app_name === "다이렉트 보험") { //다이렉트 보험 
+                        return `${item.app_url}?${this.hrid}`;
+                    } else if (item.app_name === "Ai 질병예측") {
+                        return `${item.app_url}`;
+                    } else if (item.app_name === "담당 FA 프로필" || item.app_name === "변액보험 펀드 추천") {
+                        return `${item.app_url}${this.hrid}`;
+                    } else if (item.app_name === "iFA홈페이지" || item.app_name === '보험상담 신청' || item.app_name === '변액펀드 수익률') {
+                        return `${item.app_url}`;
+                    } else if (item.app_name === '주택화재보험') {
+                        keyWord = 'house';
+                        return `${item.app_url}?${this.hrid}${keyWord ? `&keyWord=${keyWord}` : ''}`;
+                    } else if (item.app_name === '자동차보험') {
+                        keyWord = 'car';
+                        return `${item.app_url}?${this.hrid}${keyWord ? `&keyWord=${keyWord}` : ''}`;
+                    } else if (item.app_name === '운전자보험') {
+                        keyWord = 'driver';
+                        return `${item.app_url}?${this.hrid}${keyWord ? `&keyWord=${keyWord}` : ''}`;
+                    } else if (item.app_name === '골프보험') {
+                        keyWord = 'golf';
+                        return `${item.app_url}?${this.hrid}${keyWord ? `&keyWord=${keyWord}` : ''}`;
+                    } else if (item.app_name === '소상공인보험') {
+                        keyWord = 'market';
+                        return `${item.app_url}?${this.hrid}${keyWord ? `&keyWord=${keyWord}` : ''}`;
+                    } else if (item.app_name === '해외여행보험') {
+                        keyWord = 'trip';
+                        return `${item.app_url}?${this.hrid}${keyWord ? `&keyWord=${keyWord}` : ''}`;
+                    } else if (item.app_name === '해외장기채류보험') {
+                        keyWord = 'longTerm';
+                        return `${item.app_url}?${this.hrid}${keyWord ? `&keyWord=${keyWord}` : ''}`;
+                    } else {
+
+                        return `${item.app_url}`;
+                    }
+                },
+
+                toggleMore() {
+                    this.isMoreOpen = !this.isMoreOpen;
+                },
+
+                deleteCookie(name) {
+                    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                },
+
+                goLogin(val) {
+                    sessionStorage.setItem('join_path', val);
+                    location.href = '/MobileHome/Member/Login.aspx?hrid=' + this.hrid;
+                },
+
+                logout() {
+                    this.deleteCookie("simpleCookie");
+                    var url = '/logout.ashx?hrid=' + this.hrid;
+                    location.href = url;
+
+                },
+                scrollToBottom() {
+                    this.$nextTick(() => {
+                        const el = this.$refs.aiChatWrap;
+                        if (!el) return;
+                        el.scrollTop = el.scrollHeight;
+                    });
+                },
+
+
+                parseInt: function (x) { return (parseInt(x) || 0); },
+                numWithComma: function (x) { return NumberWithCommas(x); },
+
+            },
+
+            mounted() {
+                this.createObserver();
+
+                this.$nextTick(() => {
+                    this.ai_chat = document.querySelector(".ai_chat");
+                });
+            },
+            updated() {
+
+            },
+            watch: {
+                chatBotItems() {
+                    this.$nextTick(() => {
+                        this.ai_chat = document.querySelector(".ai_chat");
+                        this.ai_chat.scrollTop = this.ai_chat.scrollHeight;
+                        //console.log(this.ai_chat);
+                    });
+                },
+                chatBotItems: {
+                    deep: true,
+                    handler() {
+                        this.scrollToBottom();
+                    }
+                },
+            },
+
+        });
+    </script>
+</body>
+</html>

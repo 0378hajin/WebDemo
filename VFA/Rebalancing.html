@@ -1,0 +1,331 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="vendor/Scripts/common.js"></script>
+    <script src="vendor/Common/common2.js"></script>
+    <script src="Scripts/vfa-mock-api.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="vendor/Scripts/vue@2.3.3/vue.min.js"></script>
+    <link href="assets/CSS/reset.css" rel="stylesheet" />
+    <link href="assets/CSS/vfa.css" rel="stylesheet" />
+    
+    <script src="vendor/Scripts/vue2-datepicker@3.2.1/index.min.js"></script>
+    <script src="vendor/Scripts/vue2-datepicker@3.2.1/locale/ko.js"></script>
+    <link rel="stylesheet" href="vendor/Styles/vue2-datepicker@3.6.2/index.css" />
+            <style type="text/css">
+        .mx-datepicker-popup {
+top: 227px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+        }
+
+        .input_birth {
+            display: flex;
+            align-items: center;
+        }
+
+        .calendar_birth {
+            position: relative;
+        }
+
+        .calendar_birth img {
+width: 18px;
+    position: absolute;
+    top: -51px;
+    right: 10px;
+        }
+    </style>
+    
+    <script type="text/javascript">
+        Vue.use(DatePicker);
+    </script>
+    <title>VFA X iMLife</title>
+</head>
+<body>
+    <form id="form1">
+        <input type="hidden" id="sID" value="demo.vfa@example.com">
+        <div id="divVue">
+            <div class="wrap main">
+                <div class="header">
+
+                    <div>
+                    </div>
+                    <p class="m_title_b">리밸런싱 현황</p>
+                    <div class="df">
+                        <img src="assets/Images/ic_close.svg" class="ic_close" @click="goMain();"/>
+
+
+                    </div>
+                </div>
+                <div class="sec">
+                    <p class="lg_text_m bm10">조회기간</p>
+                    <div class="form_toggle df_radio rebal">
+                        <div class="form_radio_btn m_text_l">
+                            <input id="rebalancing01" type="radio" name="rebalancing" value="today" v-model="periodType" />
+                            <label for="rebalancing01">오늘</label>
+                        </div>
+
+                        <div class="form_radio_btn m_text_l">
+                            <input id="rebalancing02" type="radio" name="rebalancing" value="week" v-model="periodType" />
+                            <label for="rebalancing02">1주</label>
+                        </div>
+
+                        <div class="form_radio_btn m_text_l">
+                            <input id="rebalancing03" type="radio" name="rebalancing" value="month1" v-model="periodType" />
+                            <label for="rebalancing03">1개월</label>
+                        </div>
+
+                        <div class="form_radio_btn m_text_l">
+                            <input id="rebalancing04" type="radio" name="rebalancing" value="month3" v-model="periodType" />
+                            <label for="rebalancing04">3개월</label>
+                        </div>
+
+                        <div class="form_radio_btn m_text_l">
+                            <input id="rebalancing05" type="radio" name="rebalancing" value="month6" v-model="periodType" />
+                            <label for="rebalancing05">6개월</label>
+                        </div>
+                    </div>
+
+                    <div class="df_date bm10">
+                        <input type="text" readonly class="input_date" @click="togglePicker()" v-model="start_date" :max="end_date"/>
+                        <div class="calendar_birth" @click="togglePicker()"><img src="assets/icons/calendar.png" /></div>
+                        <date-picker
+                            v-model="start_date"
+                            :lang="datePicker.lang" 
+                            firstDayOfWeek="1"
+                            placeholder="CALL DATEPICKER"
+                            :open="datePicker.status.start_date" value-type="format"
+                            format="YYYY-MM-DD" style="display: none"
+                            @change="datePicker.status.start_date = false">
+                        </date-picker>
+                        <p class="m_text_m">~</p>
+                        <input type="date" class="input_date" v-model="end_date" readonly/>
+                    </div>
+
+                    <div class="btn4 c_fff l_text_b" @click="getData();">
+                        검색
+                    </div>
+                </div>
+                <ul class="rebal_list">
+                    <li v-for="item in items" :class="{ off: item.check_yn === 'Y' }" @click="viewRebalaning(item.contract_id, item.std_date, item.check_yn);"> 
+                        <img src="assets/Images/ic_alarm.svg" class="ic_alarm" />
+                        <div>
+                            <p class="lg_text_m ">{{item.sell_corp_name}}</p>
+                            <p class="lg_text_m bm4">{{item.item_name}}</p>
+                            <div class="subtext_l">
+                                리밸런싱 일자 : <span class="c_green">{{item.std_date}}</span>
+                                <img src="assets/Images/ic_new.svg" class="ic_new" v-if="item.check_yn !== 'Y'"  />
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+            <div class="popup_wrap" :class="{ on: popup }" @click.self="popup = false;">
+                <div class="p_box">
+                    <div class="innerBox" v-if="beforeList.length === 0">
+                        <p class="l_title_b bm10">현재 추천 펀드 비율</p>
+                        <ul class="infoBox">
+                            <li v-for="item in afterList" :key="item.fund_code">
+                                <p class="lg_text_l c_33">{{ item.fund_name }}</p>
+                                <p class="lg_text_b c_green">{{ item.fund_ratio }}%</p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div v-else>
+                        <p class="l_title_b bm10">리밸런싱 전</p>
+                        <ul class="infoBox bm20">
+                            <li v-for="item in beforeList" :key="item.fund_code">
+                                <p class="lg_text_l c_33">{{ item.fund_name }}</p>
+                                <p class="lg_text_b">{{ item.fund_ratio }}%</p>
+                            </li>
+                        </ul>
+
+                        <p class="l_title_b bm10 c_green">리밸런싱 후</p>
+                        <ul class="infoBox">
+                            <li v-for="item in afterList" :key="item.fund_code">
+                                <p class="lg_text_l c_33">{{ item.fund_name }}</p>
+                                <p class="lg_text_b c_green">{{ item.fund_ratio }}%</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="fixBox">
+                        <div class="innerBox">
+                            <div class="btn4 c_fff l_title_b" @click="popup = false;">확인</div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script>
+        var vm = new Vue({
+            el: "#divVue",
+            data: {
+                popup: false,
+                member_id: '',
+                start_date: '',
+                end_date: '',
+                periodType: 'today',
+
+                items:[],
+
+                beforeList: [],
+                afterList: [],
+                selectedStdDate: '',
+
+                datePicker: {
+                    lang: {
+                        formatLocale: {
+                            firstDayOfWeek: 1,
+                        },
+                        monthBeforeYear: false,
+                    },
+                    status: {
+                        start_date: false,
+                    },
+                },
+
+            },
+            created() {
+                this.member_id = document.getElementById("sID").value;
+
+                this.init();
+            },
+            methods: {
+                async init() {
+
+                    const today = new Date().toISOString().slice(0, 10);
+
+                    this.end_date = today
+
+                    this.start_date = '';
+                    this.periodType = '';
+
+                    await this.getData();
+
+                },
+
+                async getData() {
+                    var params = JSON.stringify({
+                        target: "VFANew", cmd: "RebalancingList",
+                        member_id: this.member_id,
+                        start_date: this.start_date,
+                        end_date: this.end_date
+
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.items = json.items;
+                            } else { alert(json.msg); }
+                        })
+                        .catch((error) => VueAlert(error));
+
+                },
+
+                async viewRebalaning(id, date, check) {
+
+                    this.beforeList = [];
+                    this.afterList = [];
+                    this.selectedStdDate = date;
+
+                    var detailParams = JSON.stringify({
+                        target: "VFANew",
+                        cmd: "RebalancingDetail",
+                        id: id,
+                        std_date: date
+                    });
+                    console.log(detailParams);
+                    try {
+                        let detailJson = await httpPost(urlReturnJsonAPI, detailParams);
+
+                        if (detailJson.result == 1) {
+                            this.beforeList = detailJson.items.filter(x => x.data_type === 'BEFORE');
+                            this.afterList = detailJson.items.filter(x => x.data_type === 'AFTER');
+                        } else {
+                            alert(detailJson.msg);
+                            return;
+                        }
+
+                        var updateParams = JSON.stringify({
+                            target: "VFANew",
+                            cmd: "RebalancingListUpdate",
+                            member_id: this.member_id,
+                            contract_id: id,
+                            std_date: date
+                        });
+
+                        let updateJson = await httpPost(urlReturnJsonAPI, updateParams);
+
+                        if (updateJson.result == 1) {
+                            await this.getData();
+                            this.popup = true;
+                        } else {
+                            alert(updateJson.msg);
+                        }
+
+                    } catch (error) {
+                        VueAlert(error);
+                    }
+                },
+
+                setPeriod(type) {
+                    const today = new Date();
+                    const endDate = this.formatDate(today);
+                    let startDate = new Date(today);
+
+                    if (type === "today") {
+                        startDate = new Date(today);
+                    } else if (type === "week") {
+                        startDate.setDate(startDate.getDate() - 7);
+                    } else if (type === "month1") {
+                        startDate.setMonth(startDate.getMonth() - 1);
+                    } else if (type === "month3") {
+                        startDate.setMonth(startDate.getMonth() - 3);
+                    } else if (type === "month6") {
+                        startDate.setMonth(startDate.getMonth() - 6);
+                    }
+
+                    this.start_date = this.formatDate(startDate);
+                    this.end_date = endDate;
+                },
+
+                formatDate(date) {
+                    const y = date.getFullYear();
+                    const m = String(date.getMonth() + 1).padStart(2, '0');
+                    const d = String(date.getDate()).padStart(2, '0');
+                    return y + '-' + m + '-' + d;
+                },
+
+                goMain() {
+                    var url = 'Main.html';
+                    window.location.href = url;
+
+                },
+
+                togglePicker() {
+                    this.datePicker.status.start_date = !this.datePicker.status.start_date;
+                },
+
+
+            },
+            watch: {
+                periodType(val) {
+                    if (!val) return;
+                    this.setPeriod(val);
+                },
+            },
+
+
+        });
+    </script>
+</body>
+</html>

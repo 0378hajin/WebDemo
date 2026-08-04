@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>메디코드 보험설계</title>
+    <link href="assets/styles/medi_code.css" rel="stylesheet" />
+    <script src="assets/js/vendor/vue.min.js"></script>
+</head>
+<body>
+<form id="form1">
+    <div id="divVue">
+        <div class="wrap intro">
+            <section class="sec1" v-show="section === 1">
+                <div class="back_btn" role="button" tabindex="0" aria-label="이전 화면" @click="goBack" @keyup.enter="goBack"></div>
+                <img src="assets/images/g_logo.png" class="logo" alt="MediCode" />
+                <p class="title mb05">메디코드 보험설계 MCID</p>
+                <p class="f18 gr_color mb2">MediCode-based Insurance Design</p>
+                <div class="tc intro_img mb2">
+                    <img src="assets/images/guide3_main.png" alt="메디코드 서비스 안내" />
+                </div>
+                <p class="mb2 f15 fw300">
+                    건강검진과 유전자 데이터를 함께 분석해 위험 질병과 준비 상태를 확인하는 포트폴리오 데모입니다.
+                </p>
+                <div class="w_bg">
+                    <p class="f13 gr_color">
+                        실제 고객정보와 회사 API를 사용하지 않으며 제공된 샘플 데이터를 익명화해 구성했습니다.
+                    </p>
+                </div>
+                <div class="g_btn on fix" role="button" tabindex="0" @click="showSection(2)" @keyup.enter="showSection(2)">
+                    <a>시작하기</a>
+                </div>
+            </section>
+
+            <section class="sec2" v-show="section === 2">
+                <div class="back_btn" role="button" tabindex="0" aria-label="이전 단계" @click="goBack" @keyup.enter="goBack"></div>
+                <img src="assets/images/g_logo.png" class="logo" alt="MediCode" />
+                <p class="title mb05">메디코드 보험설계 MCID</p>
+                <p class="f18 gr_color mb2">MediCode-based Insurance Design</p>
+                <ul class="step mb2">
+                    <li class="w_box mb1">
+                        <p class="s_title mb1">건강검진 데이터 불러오기 <span class="g_color">(필수)</span></p>
+                        <p class="f13 fw300 gr_color2">샘플 건강검진을 선택하면 기본 리포트를 생성합니다.</p>
+                    </li>
+                    <li class="w_box mb1">
+                        <p class="s_title mb1">유전자 데이터 불러오기 <span class="gr_color">(선택)</span></p>
+                        <p class="f13 fw300 gr_color2">유전자 데이터를 추가하면 슬라이더로 반영 비율을 조정할 수 있습니다.</p>
+                    </li>
+                    <li class="w_box mb1">
+                        <p class="s_title mb1">보장분석 리포트 확인</p>
+                        <p class="f13 fw300 gr_color2">0~100 단계별 계산 결과를 질병 위험도별로 확인합니다.</p>
+                    </li>
+                </ul>
+                <div class="g_btn on fix" role="button" tabindex="0" @click="startDemo" @keyup.enter="startDemo">
+                    <a>다음</a>
+                </div>
+            </section>
+        </div>
+    </div>
+</form>
+<script src="scripts/intro.js"></script>
+</body>
+</html>

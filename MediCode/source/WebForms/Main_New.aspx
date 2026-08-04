@@ -1,0 +1,71 @@
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Main_New.aspx.cs" Inherits="ifa.co.kr.Example.MediCode.Main_New" ResponseEncoding="utf-8" %>
+<%@ Register Src="~/Example/MediCode/WebUserControl_Top.ascx" TagName="WebUserControl_Top" TagPrefix="uc1" %>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>메디코드 보험설계</title>
+    <link href="/MobileHome/MediCode/styles/medi_code.css?v=<%=DateTime.Now.ToString("yyyyMMddHHmmss") %>" rel="stylesheet" />
+    <link href="/MobileHome/MediCode/styles/header.css?v=<%=DateTime.Now.ToString("yyyyMMddHHmmss") %>" rel="stylesheet" />
+    <link href="styles/portfolio-overrides.css" rel="stylesheet" />
+    <script src="/Scripts/vue@2.3.3/vue.min.js"></script>
+</head>
+<body>
+<form id="form1" runat="server">
+    <uc1:WebUserControl_Top ID="WebUserControl_Top" runat="server" />
+    <div id="divVue">
+        <div class="wrap data_load">
+            <section class="sec1">
+                <img src="/MobileHome/MediCode/images/g_logo.png" class="logo" alt="MediCode" />
+                <p class="title mb05">메디코드 보험설계 MCID</p>
+                <p class="f18 gr_color mb2">MediCode-based Insurance Design</p>
+
+                <div class="fl mb1">
+                    <div class="health_btn" :class="{ on: healthLoaded }" @click="goToHealth">
+                        <p class="s_title mb2 w_color">건강검진 및 보험<br />데이터 불러오기</p>
+                        <p class="w_color f13 fw300" v-if="!healthLoaded">
+                            내 건강상태로 보험정보<br />무료 진단하기
+                        </p>
+                        <p class="g_color bold f18 finish" v-else>
+                            완료<br />
+                            <small class="min_txt fw300">{{ healthDate }}</small>
+                        </p>
+                    </div>
+
+                    <div class="gen_btn" :class="{ on: geneLoaded }" @click="loadGene">
+                        <p class="s_title mb2">
+                            유전자 분석<br />
+                            <span v-if="!geneLoaded && !geneLoading">검사하러가기</span>
+                            <span class="sky_color" v-if="geneLoading">불러오는 중</span>
+                        </p>
+                        <p class="min_txt" v-if="!geneLoaded && !geneLoading">
+                            샘플 유전자 검사<br />데이터 불러오기
+                        </p>
+                        <p class="sky_color bold f18 finish" v-if="geneLoaded">
+                            완료<br />
+                            <small class="f13 fw300 gr_color">{{ geneDate }}</small>
+                        </p>
+                    </div>
+                </div>
+
+                <p class="s_txt mb1" v-if="errorMessage">{{ errorMessage }}</p>
+
+                <div class="medi_btn mb2" :class="{ health: healthLoaded, gen: geneLoaded }" @click="openReport">
+                    <p class="s_title mb2">나의 보장분석 리포트 보기</p>
+                    <p class="min_txt">
+                        건강검진 :
+                        <strong>{{ healthLoaded ? '기본 리포트 생성 가능' : '기본 리포트 생성 불가' }}</strong>
+                        <br />
+                        유전자 검사 :
+                        <strong>{{ geneLoaded ? '정밀 리포트 생성 가능' : '정밀 리포트 생성 불가' }}</strong>
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+</form>
+<script src="scripts/medicode-demo-store.js"></script>
+<script src="scripts/main-new.js"></script>
+</body>
+</html>

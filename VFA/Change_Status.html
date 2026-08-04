@@ -1,0 +1,246 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="assets/CSS/reset.css" rel="stylesheet" />
+    <link href="assets/CSS/vfa.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="vendor/Styles/js/common.js"></script>
+    <script src="vendor/Scripts/common.js"></script>
+    <script src="vendor/Scripts/vue@2.3.3/vue.min.js"></script>
+    <script src="Scripts/vfa-mock-api.js"></script>
+    <script src="Scripts/Change_Status.js"></script>
+    
+
+    
+    <title>VFA</title>
+</head>
+<body>
+    <form id="form1">
+        <input type="hidden" id="hdnMemberId" value="demo.vfa@example.com">
+        
+        <div id="changeApp">
+        <div id="profileSection" class="wrap main" v-show="mode !== 'rebalancing'">
+            <div class="header">
+                <div>
+                    <img src="assets/Images/ic_back.svg" onclick="prevStep()" class="ic_back" />
+                </div>
+                <p class="m_title_b">펀드 설정 변경</p>
+                <div class="df">
+                </div>
+            </div>
+            <div class="g_sec ">
+                <div>
+                    <div class="txtBox_white bm20">
+                        <img src="assets/Images/main_img5.svg" class="" />
+                        <p class="lg_text_b c_green tac bm10">펀드 옵션 변경, 언제부터 적용될까요?</p>
+                        <p class="m_text_l c_55 tac">
+                            현재 설정된 옵션은 그대로 유지됩니다. 변경 된 옵션은 다음 리밸런싱부터 적용됩니다.
+                        </p>
+                    </div>
+                    <p class="lg_text_l bm5">투자성향 분석 - 시장 변동성</p>
+                    <select id="invest_type_01" name="invest_type_01" class="bm20" v-model="newAnswers.invest_type_01">
+                        <option value="1">큰 변동이 생기면 불안해요</option>
+                        <option value="2">어느 정도 변동은 괜찮아요</option>
+                        <option value="3">수익을 위해 변동성은 감수할 수 있어요</option>
+                    </select>
+                    <p class="lg_text_l bm5">투자성향 분석 - 손실 대응성</p>
+                    <select id="invest_type_02" name="invest_type_02" class="bm20" v-model="newAnswers.invest_type_02">
+                        <option value="1">손실이 나면 줄이거나 매도하고 싶어요</option>
+                        <option value="2">손실이 나도 일정 기간 유지해요</option>
+                        <option value="3">손실이 나도 추가 매수를 고려해요</option>
+                    </select>
+                    <p class="lg_text_l bm5">가입 목적</p>
+                    <select id="invest_purpose" name="invest_purpose" class="bm20" v-model="newAnswers.invest_purpose">
+                        <option value="1">노후 연금자산 마련</option>
+                        <option value="2">기타 목적자금을 위한 투자</option>
+                    </select>
+                    <p id="label_retirement" class="lg_text_l bm5" v-show="newAnswers.invest_purpose === '1'">은퇴 시점</p>
+                    <p id="label_purpose" class="lg_text_l bm5" v-show="newAnswers.invest_purpose === '2'">목적자금 사용 시점</p>
+                    <input id="target_age" name="target_age" type="number" class="input_text bm20" v-model.number="newAnswers.target_age" />
+                    <p class="lg_text_l bm5">투자운용 방식</p>
+                    <select id="gp_apply_yn" name="gp_apply_yn" class="bm20" v-model="newAnswers.gp_apply_yn">
+                        <option value="1">자동 배분 조절형(글라이드 패스 적용)</option>
+                        <option value="2">고정 배분 운용형(글라이드패스 미 적용)</option>
+                    </select>
+
+                    <div class="insuBox bm40">
+                        <div class="titBox">
+                            <p class="lg_text_b c_33">예시로 알아보기</p>
+
+                        </div>
+
+                        <div class="btnBox ">
+                            <ul class="exlist">
+                                <li>
+                                    <div>
+                                        <img src="assets/Images/main_img11.svg" />
+                                        <div class="g_line line01"></div>
+                                    </div>
+                                    <div class="w100p">
+                                        <p class="lg_text_b">변경 전</p>
+                                        <p class="m_text_l c_green bm20">90일 시작</p>
+                                    </div>
+                                    <div>
+                                        <div class="c_55 txt_10 b_cirle tac">잔여 기간<br />
+                                            <span class="txt_12_m">90일</span></div>
+                                        <div class="d_line"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <img src="assets/Images/main_img12.svg" />
+                                        <div class="g_line line02"></div>
+                                    </div>
+                                    <div class="w100p">
+                                        <p class="lg_text_b">변경 시점</p>
+                                        <p class="m_text_l bm20">리밸런싱 주기 '30일' 설정</p>
+                                    </div>
+                                    <div>
+                                        <div class="c_55 txt_10 b_cirle tac">잔여 기간<br />
+                                            <span class="txt_12_m">60일</span></div>
+
+                                        <div class="d_line"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <img src="assets/Images/main_img13.svg" />
+                                        <div class="g_line line03"></div>
+                                    </div>
+                                    <div class="w100p">
+                                        <p class="lg_text_b">변경 완료</p>
+                                        <p class="m_text_l bm20">리밸런싱 ’30일‘ 적용</p>
+                                    </div>
+                                    <div>
+                                        <div class="c_55 txt_10 b_cirle tac">잔여 기간<br />
+                                            <span class="txt_12_m">0일</span></div>
+
+                                    </div>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                    <div id="btn_profile_save" class="btn4 c_fff l_title_b" @click="onProfileSave">변경하기</div>
+
+                </div>
+
+            </div>
+        </div>
+        
+        <div id="rebalancingSection" class="wrap main" v-show="mode === 'rebalancing'">
+            <div class="header">
+                <div>
+                    <img src="assets/Images/ic_back.svg" onclick="prevStep()" class="ic_back" />
+                </div>
+                <p class="m_title_b">리밸런싱 주기 변경</p>
+                <div class="df">
+                </div>
+            </div>
+            <div class="g_sec ">
+                <div>
+                    <div class="txtBox_white bm20">
+                        <img src="assets/Images/main_img5.svg" class="" />
+                        <p class="lg_text_b c_green tac bm10">리밸런싱 주기 변경, 언제부터 적용될까요?</p>
+                        <p class="m_text_l c_55 tac">
+                            현재 진행 중인 주기는 그대로 유지됩니다. 변경 된 주기는 다음 리밸린싱부터 적용됩니다.
+                        </p>
+                    </div>
+                    <p class="lg_text_l bm5">리밸런싱 주기 변경</p>
+                    <select id="update_days" name="update_days" class="bm20" v-model="newAnswers.update_days">
+                        <option value="30">30일</option>
+                        <option value="60">60일</option>
+                        <option value="90">90일</option>
+                    </select>
+                    <div class="insuBox bm10">
+                        <div class="titBox">
+                            <p class="lg_text_b c_33">예시로 알아보기</p>
+
+                        </div>
+
+                        <div class="btnBox ">
+                            <ul class="exlist">
+                                <li>
+                                    <div>
+                                        <img src="assets/Images/main_img11.svg" />
+                                        <div class="g_line line01"></div>
+                                    </div>
+                                    <div class="w100p">
+                                        <p class="lg_text_b">변경 전</p>
+                                        <p class="m_text_l c_green bm20">90일 시작</p>
+                                    </div>
+                                    <div>
+                                        <div class="c_55 txt_10 b_cirle tac">잔여 기간<br />
+                                            <span class="txt_12_m">90일</span></div>
+                                        <div class="d_line"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <img src="assets/Images/main_img12.svg" />
+                                        <div class="g_line line02"></div>
+                                    </div>
+                                    <div class="w100p">
+                                        <p class="lg_text_b">변경 시점</p>
+                                        <p class="m_text_l bm20">리밸런싱 주기 '30일' 설정</p>
+                                    </div>
+                                    <div>
+                                        <div class="c_55 txt_10 b_cirle tac">잔여 기간<br />
+                                            <span class="txt_12_m">60일</span></div>
+
+                                        <div class="d_line"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <img src="assets/Images/main_img13.svg" />
+                                        <div class="g_line line03"></div>
+                                    </div>
+                                    <div class="w100p">
+                                        <p class="lg_text_b">변경 완료</p>
+                                        <p class="m_text_l bm20">리밸런싱 ’30일‘ 적용</p>
+                                    </div>
+                                    <div>
+                                        <div class="c_55 txt_10 b_cirle tac">잔여 기간<br />
+                                            <span class="txt_12_m">0일</span></div>
+
+                                    </div>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                    <div id="btn_rebalancing_save" class="btn4 c_fff l_title_b" @click="onRebalancingSave">변경하기</div>
+
+                </div>
+
+            </div>
+        </div>
+
+                    <div class="popup_wrap" >
+                <div class="p_box alert">
+                    <div class="innerBox">
+                        <p class="l_title_b tac">펀드 설정을 변경하시겠어요?<br />
+변경 내용은 다음 리밸런싱부터 적용됩니다.
+</p>
+                    </div>
+                    <div class="innerBox">
+                        <div class="df_btn">
+                            <div class="btn4 c_fff l_title_b">예</div>
+                            <div class="btn3 c_fff l_title_b">아니오</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- Server-side redirects now handle contract absence; client poller removed -->
+</body>
+</html>
+

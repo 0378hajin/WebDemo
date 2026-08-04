@@ -1,0 +1,15 @@
+﻿{
+  "loaded": true,
+  "loadedAt": "2024-12-06",
+  "customer": {
+    "displayName": "샘플 사용자",
+    "age": 30,
+    "gender": "M"
+  },
+  "summary": {
+    "assessmentType": "건강검진",
+    "hasBiomarkerData": true,
+    "hasMedicalExpenseAnalysis": true
+  },
+  "source": "portfolio-sample"
+}

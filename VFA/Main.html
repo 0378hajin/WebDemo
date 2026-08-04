@@ -1,0 +1,1411 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="vendor/Scripts/common.js"></script>
+    <script src="vendor/Common/common2.js"></script>
+    <script src="vendor/Scripts/vue@2.3.3/vue.min.js"></script>
+    <script src="vendor/Scripts/partners.js"></script>
+    <script src="Scripts/vfa-mock-api.js"></script>
+    <script src="vendor/Scripts/core.js"></script>
+    <script src="vendor/Scripts/charts.js"></script>
+    <script src="vendor/Scripts/animated.js"></script>
+
+    <link href="assets/CSS/reset.css" rel="stylesheet" />
+    <link href="assets/CSS/vfa.css" rel="stylesheet" />
+        <link rel="stylesheet"href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    
+
+    
+    <style>
+        .medi_ai{
+            display:none;
+        }
+    </style>
+    <title>VFA X iMLife</title>
+</head>
+<body>
+    <form id="form1">
+        
+        <input type="hidden" id="shrid" value="F000">
+        <input type="hidden" id="sID" value="demo.vfa@example.com">
+        <div id="divVue" v-cloak>
+            <div class="loading_wrap" v-if="isLoading">
+                <div class="loading_box">
+                    <div class="spinner"></div>
+                    <p>데이터를 불러오는 중입니다.</p>
+                </div>
+            </div>
+            <div class="wrap main">
+                <div class="header">
+                    <div>
+                        <img src="assets/Images/ic_back.svg" class="ic_close" onclick="history.go(-1);" alt="뒤로 가기" />
+                    </div>
+                    <p class="m_title_b">VFA</p>
+                    <div></div>
+                </div>
+                <div class="sec visual">
+                    <div>
+                        
+                        <img src="assets/Images/logo_vfaimlife.png"class="logo_g bm30" style="width: 230px;" />
+                        <p class="pp_title_2b ">변액보험 펀드 서비스</p>
+                        <p class="l_title_l  bm40">Variable Fund Advisor</p>
+                    </div>
+
+                    <img src="assets/Images/main_img0.svg" class="main_img0" />
+                </div>
+                <div class="g_sec radius">
+                    <div class="bm30">
+                        <p class="title_b bm5">VFA 이용 가이드</p>
+                        <div class="swiper mySwiper">
+                            <div class="swiper-wrapper">
+                               <div class="swiper-slide"><img @click="goGuide();" src="assets/Images/main_img7.svg" /></div>
+                               <div class="swiper-slide"><img @click="goIntro();" src="assets/Images/main_img8.svg" /></div>
+                               <div class="swiper-slide"><img @click="goManual();" src="assets/Images/main_img9.svg" /></div>
+                            </div>
+                          </div>
+                    </div>
+                    <!--로그인후 정보없음-->
+                    <div v-if="(contractList && contractList.length === 0) && (memberContractMP && memberContractMP.length === 0) && (memberContractList && memberContractList.length === 0)">
+                        <div class="title_b bm4">로보어드바이저(RA) 펀드추천 정보</div>
+                        <p class=" m_text_m bm20">변액보험 계약내역</p>
+                        <div class="txtBox_white bm10 df_profile" v-if="(member_info.member_gender === '' || member_info.member_gender !== 0) && member_info.member_birth === ''">  
+                            <img src="assets/Images/basic.svg" />
+                            <div>
+                                <p class="c_33 lg_text_l">{{member_info.member_name}} 님</p>
+                                <p class="l_title_m">리밸런싱 예정일 : <span class="c_green">없음</span></p>
+                            </div>
+                        </div>
+                        <div class="txtBox_white bm10 df_profile" v-if="(member_info.member_gender !== '' || member_info.member_gender !== 0) && member_info.member_birth !== ''">  
+                            <img src="assets/Images/main_img3.svg" />
+                            <div>
+                                <p class="c_33 lg_text_l">{{member_info.member_name}} 님 <span v-if="member_info.member_birth !== 0">/ {{member_info.member_birth}}세</span></p>
+                                <p class="l_title_m">리밸런싱 예정일 : <span class="c_green">없음</span></p>
+                            </div>
+                        </div>
+                        <div class="txtBox_white bm20">
+                            <p class="m_title_m c_green tac">iMLife 고객이 아닌가요?</p>
+                            <img src="assets/Images/main_img4.svg" class="" />
+     
+                            <div class="line bm20"></div>
+                            <div class="df_fs bm5">
+                                <p class="m_text_b">서비스 가능 상품 : </p>
+                                <p class="m_text_l">변액연금보험, 변액유니버셜보험</p>
+                            </div>
+                            <div class="df_fs">
+                                <p class="m_text_b">서비스 불가 상품 : </p>
+                                <p class="m_text_l">변액종신보험</p>
+                            </div>
+
+                        </div>
+                        <div class="txtBox_gray">
+                            <p class="l_title_m bm10">꼭 알아두세요</p>
+                            <ul class="dot_list m_text_l">
+                                <li>본 서비스는 로보어드바이저투자자문(주)가 DNA 인공지능 알고리즘을 활용해 변액보험 펀드 추천을 자문하는 서비스입니다. </li>
+                                <li>본 서비스는 투자 성과를 보장하지 않으며, 최종 투자 결정 및 책임은 고객에게 있습니다. </li>
+                                <li>시장 상황, 알고리즘 업데이트, 서비스 정책 변경 등에 따라 제공되는 내용이 변경되거나 중단될 수 있습니다.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--로그인후 정보있음-->
+                    
+
+
+                    <!--리밸런싱 현황-->
+                    <div  v-if="(contractList && contractList.length > 0) || (memberContractMP && memberContractMP.length > 0) || (memberContractList && memberContractList.length > 0)">
+                        <div class="title_b bm4">로보어드바이저(RA) 펀드추천 정보</div>
+                        <p class=" m_text_m bm20">변액보험 계약내역</p>
+                        <div class="bm10 insuBox">
+                            <div class="txtBox_white df_profile innerBox">
+                                <img src="assets/Images/main_img3.svg" v-if="member_info.member_gender === 'M'"/>
+                                <img src="assets/Images/main_img3_1.svg" v-if="member_info.member_gender === 'F'"/>
+                                <div>
+                                    <p class="c_33 lg_text_l">{{member_info.member_name}} 님 / {{member_info.member_birth}}세</p>
+                                    <p class="l_title_m">리밸런싱 예정일 : 
+                                        <span class="c_green" v-if="days_remaining !== ''">D-{{days_remaining}}일</span>
+                                        <span class="c_green" v-else>없음</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="btnBox infoWrap" v-if="hasChartData">
+                                <div class="btn1 c_fff l_text_b" @click="goCurrentRB();">리밸런싱 현황 바로가기</div>
+                            </div>
+                        </div>
+                        <div class="insuBox bm10" v-for="item in contractList" :key="item.id">
+   
+                        <div v-if="item.update_date !==''">
+                            <div class="titBox">
+                                <div class="df_sb">
+                                    <img :src="getPartnerImage(item.corp_name)" />
+                                </div>
+                                <p class="l_title_b">{{item.item_name}}</p>
+                                <p class="l_text_l c_33">증권번호 : {{item.account_number}}</p>
+                                    <div class="df_btn tm20">
+                                    <div class="btn2 c_green l_text_b" @click="openChangeStatus('profile', item.id)">펀드 설정 변경</div> 
+                                    <div class="btn2 c_green l_text_b" @click="openChangeStatus('rebalancing', item.id)">리밸런싱 주기 변경</div>
+                                </div>
+                            </div>
+
+                            <div class="innerBox">
+                                <p class="lg_text_m w110">가입 목적</p>
+                                <p class="lg_text_l c_green" v-if="item.invest_purpose === '1'">노후 연금자산 마련</p>
+                                <p class="lg_text_l c_green" v-if="item.invest_purpose === '2'">기타 목적자금을 위한 투자</p>
+                            </div>
+
+                            <div class="innerBox">
+                                <p class="lg_text_m w110">은퇴시점</p>
+                                <p class="lg_text_l c_33">{{item.target_age}}세</p>
+                            </div>
+
+                            <div class="innerBox">
+                                <p class="lg_text_m w110">
+                                    투자운용 방식  
+                                    <img src="assets/Images/ic_popup.svg" class="ic_popup" @click="openMethodPop(item.gp_apply_yn)"/>
+                                </p>
+                                <p class="lg_text_l c_33" v-if="item.gp_apply_yn === '1'">자동 배분 조절형</p>
+                                <p class="lg_text_l c_33" v-else-if="item.gp_apply_yn === '2'">고정 배분 운용형</p>
+                            </div>
+
+                            <div class="btnBox infoWrap">
+                                <div class="title_b">
+                                    맞춤형 펀드 안내 
+                                    <img src="assets/Images/ic_popup.svg" @click="rebalncingPopup = true;"/>
+                                </div>
+
+                                <ul class="infoBox tm20 bm20">
+                                    <li>
+                                        <p class="m_text_l">추천 펀드 생성일</p>
+                                        <p class="m_text_b c_green">{{item.create_dtm.slice(0,10)}}</p>
+                                    </li>
+                                    <li>
+                                        <p class="m_text_l">다음 리밸런싱 예정일</p>
+                                        <p class="m_text_b">{{item.update_date}}</p>
+                                    </li>
+                                </ul>
+                                
+                                <div :id="'chart_' + item.id" class="amchart" style="width:100%; height:220px;"></div>
+                                <ul class="chartList bm30">
+                                    <li v-for="(fund, index) in getSortedFundData(item)" :key="index">
+                                        <div class="chart_tit">
+                                            <div class="dot"
+                                                 :style="{ backgroundColor: getColor(index) }">
+                                            </div>
+                                            <p class="m_text_l">
+                                                {{ fund.name }}
+                                            </p>
+                                        </div>
+
+                                        <div class="chart_line"></div>
+
+                                        <p class="m_text_l">
+                                            {{ fund.ratio }}%
+                                        </p>
+                                    </li>
+                                </ul>
+                                <div class="btn1 c_fff l_title_b" 
+                                     @click="goDetail(item.contract_id, item.account_number)">
+                                    자세히 보기
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-else>
+                            <div class="titBox">
+                                <div class="df_sb">
+                                    <img :src="getPartnerImage(item.corp_name)" />
+                                    <p class="subtext_l c_green" v-if="!item.ifa_item_code">
+                                        서비스 지원 안함
+                                    </p>
+                                </div>
+
+                                <p class="l_title_b">{{item.item_name}}</p>
+                                <p class="l_text_l c_33">증권번호 : {{item.account_number}}</p>
+                            </div>
+
+                            <div class="innerBox">
+                                <p class="lg_text_m">계약일</p>
+                                <p class="lg_text_l">{{item.contract_date}}</p>
+                            </div>
+
+                            <div class="innerBox">
+                                <p class="lg_text_m">보험료</p>
+                                <p class="lg_text_l">
+                                    <span class="c_green">{{numWithComma(item.invest_amount)}}</span>원
+                                </p>
+                            </div>
+
+                            <div class="innerBox">
+                                <p class="lg_text_m">계약상태</p>
+                                <p class="lg_text_l">{{keepStateName(item.keep_state)}}</p>
+                            </div>
+
+                            <div class="btnBox">
+                                <!-- 서비스 가능 -->
+                                <div class="btn1 c_fff l_text_b"
+                                     v-if="item.ifa_item_code"
+                                     @click="openFundServiceReq(item.id, item.vfa_item_code)">
+                                    펀드추천 서비스 신청
+                                </div>
+
+                                <!-- 서비스 미지원 -->
+                                <div class="btn2 c_green l_text_b"
+                                     v-else
+                                     @click="openFundAddReq(item)">
+                                    펀드추천 서비스 요청 하기
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="insuBox bm10" v-for="item in memberContractMP" :key="item.id">
+   
+                    <div v-if="item.update_date !==''">
+                        <div class="titBox">
+                            <div class="df_sb">
+                                <img :src="getPartnerImage(item.corp_name)" />
+                            </div>
+                            <p class="l_title_b">{{item.item_name}}</p>
+                                <div class="df_btn tm20">
+                                <div class="btn2 c_green l_text_b" @click="openChangeStatus('profile', item.id)">펀드 설정 변경</div> 
+                                <div class="btn2 c_green l_text_b" @click="openChangeStatus('rebalancing', item.id)">리밸런싱 주기 변경</div>
+                            </div>
+                        </div>
+
+                        <div class="innerBox">
+                            <p class="lg_text_m w110">가입 목적</p>
+                            <p class="lg_text_l c_green" v-if="item.invest_purpose === '1'">노후 연금자산 마련</p>
+                            <p class="lg_text_l c_green" v-if="item.invest_purpose === '2'">기타 목적자금을 위한 투자</p>
+                        </div>
+
+                        <div class="innerBox">
+                            <p class="lg_text_m w110">은퇴시점</p>
+                            <p class="lg_text_l c_33">{{item.target_age}}세</p>
+                        </div>
+
+                        <div class="innerBox">
+                            <p class="lg_text_m w110">
+                                투자운용 방식  
+                                <img src="assets/Images/ic_popup.svg" class="ic_popup" @click="openMethodPop(item.gp_apply_yn)"/>
+                            </p>
+                            <p class="lg_text_l c_33" v-if="item.gp_apply_yn === '1'">자동 배분 조절형</p>
+                            <p class="lg_text_l c_33" v-else-if="item.gp_apply_yn === '2'">고정 배분 운용형</p>
+                        </div>
+
+                        <div class="btnBox infoWrap">
+                            <div class="title_b">
+                                맞춤형 펀드 안내 
+                                <img src="assets/Images/ic_popup.svg" @click="rebalncingPopup = true;"/>
+                            </div>
+
+                            <ul class="infoBox tm20 bm20">
+                                <li>
+                                    <p class="m_text_l">추천 펀드 생성일</p>
+                                    <p class="m_text_b c_green">{{item.create_dtm.slice(0,10)}}</p>
+                                </li>
+                                <li>
+                                    <p class="m_text_l">다음 리밸런싱 예정일</p>
+                                    <p class="m_text_b">{{item.update_date}}</p>
+                                </li>
+                            </ul>
+                            
+                            <div>
+                                <div :id="'chart_' + item.id" class="amchart" style="width:100%; height:220px;"></div>
+                                <ul class="chartList bm30">
+                                    <li v-for="(fund, index) in getSortedFundData(item)" :key="index">
+                                        <div class="chart_tit">
+                                            <div class="dot"
+                                                 :style="{ backgroundColor: getColor(index) }">
+                                            </div>
+                                            <p class="m_text_l">
+                                                {{ fund.name }}
+                                            </p>
+                                        </div>
+
+                                        <div class="chart_line"></div>
+
+                                        <p class="m_text_l">
+                                            {{ fund.ratio }}%
+                                        </p>
+                                    </li>
+                                </ul>
+                                <div class="btn1 c_fff l_title_b" 
+                                     @click="goDetail(item.id, item.account_number)">
+                                    자세히 보기
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-else>
+                        <div class="titBox">
+                            <div class="df_sb">
+                                <img :src="getPartnerImage(item.corp_name)" />
+                                <p class="subtext_l c_green" v-if="!item.ifa_item_code">
+                                    서비스 지원 안함
+                                </p>
+                            </div>
+
+                            <p class="l_title_b">{{item.item_name}}</p>
+                            <p class="l_text_l c_33">증권번호 : {{item.account_number}}</p>
+                        </div>
+
+                        <div class="innerBox">
+                            <p class="lg_text_m">계약일</p>
+                            <p class="lg_text_l">{{item.contract_date}}</p>
+                        </div>
+
+                        <div class="innerBox">
+                            <p class="lg_text_m">보험료</p>
+                            <p class="lg_text_l">
+                                <span class="c_green">{{numWithComma(item.invest_amount)}}</span>원
+                            </p>
+                        </div>
+
+                        <div class="innerBox">
+                            <p class="lg_text_m">계약상태</p>
+                            <p class="lg_text_l">{{keepStateName(item.keep_state)}}</p>
+                        </div>
+
+                        <div class="btnBox">
+                            <!-- 서비스 가능 -->
+                            <div class="btn1 c_fff l_text_b"
+                                 v-if="item.ifa_item_code"
+                                 @click="openFundServiceReq(item.id, item.vfa_item_code)">
+                                펀드추천 서비스 신청
+                            </div>
+
+                            <!-- 서비스 미지원 -->
+                            <div class="btn2 c_green l_text_b"
+                                 v-else
+                                 @click="fundAddReq = true;">
+                                펀드추천 서비스 요청 하기
+                            </div>
+    
+                        </div>
+                    </div>
+
+                </div>
+                    </div>
+                    <div v-if="memberContractList && memberContractList.length > 0" class="insuBox bm10" v-for="item in memberContractList">
+                        <div class="titBox">
+                            <div class="df_sb">
+                                <img v-bind:src="getPartnerImage(item.corp_name)" />
+                                <p class="subtext_l c_green" v-if="!item.ifa_item_code">
+                                    서비스 지원 안함
+                                </p>
+                                <img src="assets/Images/ic_c_close.svg" style="cursor:pointer;" @click="delPopOpen(item.id)" v-show="item.ifa_item_code && item.stock_code === ''"/>
+                            </div>
+                            <p class="l_title_b">{{item.item_name}}</p>
+                            <p class="l_text_l c_33" v-if="item.stock_code != ''">증권번호 : {{item.stock_code}}</p>
+                        </div>
+                        <div class="innerBox">
+                            <p class="lg_text_m">계약일</p>
+                            <p class="lg_text_l">{{item.contract_date}}</p>
+                        </div>
+                        <div class="innerBox" v-if="item.invest_amount != 0">
+                            <p class="lg_text_m">보험료</p>
+                            <p class="lg_text_l">
+                                <span class="c_green">{{numWithComma(item.invest_amount)}}</span>원
+                            </p>
+                        </div>
+                        <div class="innerBox">
+                            <p class="lg_text_m">계약상태</p>
+                            <p class="lg_text_l">
+                                <span class="">{{item.contract_status}}</span>
+                            </p>
+                        </div>
+                        <div class="btnBox">
+                            <div class="btn6 c_aa l_text_b"  v-if="item.contract_status === '해지'">해지 상품</div>
+                            <div class="btn1 c_fff l_text_b" v-else-if="item.ifa_item_code !== ''" @click="openMemberServiceReq(item.id, item.item_code)">펀드추천 서비스 신청</div>
+                            <div class="btn2 c_green l_text_b" v-else-if="!item.ifa_item_code && item.req_yn === 'N'" @click="openFundAddReq(item)">펀드추천 서비스 요청 하기</div>
+                            <div class="btn6 c_aa l_text_b"  v-else>서비스 신청 완료</div>
+                        </div>
+
+                    </div>
+
+                    <div class="btn4 c_fff l_title_b tm20" @click="goFundAdd();">상품 추가하기</div>
+            </div>
+
+            <div class="popup_wrap" :class="{ on: fundServiceReq }" @click.self="fundServiceReq = false">
+                <div class="p_box">
+                    <div class="titBox">
+                        <p class="l_title_b">로보어드바이저(RA) 펀드변경 서비스 신청</p>
+                        <img src="assets/Images/main_img6.svg" class="main_img6" />
+                        <div class="c_red2 txtBox_b_red m_text_l tac bm20">
+                            변액보험 로보어드바이저 추천 펀드는 시장 상황에 따라 손실이 발생할 수 있습니다.
+                        </div>
+                        <p class="c_55 m_text_l ">VFA는 변액보험 펀드 비중을 알고리즘 분석을 바탕으로 제안 하는 보조 서비스입니다. <span class="c_green">추천 결과는 수익을 보장하거나 특정 성과를 약속하지 않습니다.</span><br />최종 결정은 고객님의 판단과 책임으로 직접 판단해 주세요.</p>
+                        <div class="dashed"></div>
+                        <p class="l_title_m bm8">꼭 알아두세요! </p>
+                        <div class="txt_indent bm15">
+                            <p class="m_text_m bm5">·정기적인 리밸런싱을 유지할 경우</p>
+                            <p class="m_text_l c_55">리스크가 효과적으로 분산되며, 장기적으로 안정적인 운용성과를 기대할 수 있습니다.</p>
+                        </div>
+                        <div class="txt_indent">
+                            <p class="m_text_m c_green bm5">· 리밸런싱을 실행하지 않을 경우</p>
+                            <p class="m_text_l c_55">알고리즘이 제안한 목표 포트폴리오와 실제 운용 결과가 달라 질 수 있습니다.</p>
+                        </div>
+                    </div>
+                    <div class="fixBox">
+                        <div class="innerBox">
+                            <input type="checkbox" id="chk1" class="checkbox" v-model="agree"/>
+                            <label for="chk1" class="label_hold lg_text_m">본인은 RA 알고리즘 추천이 수익을 보장하지 않으며, 리밸런싱 실행 여부에 따라 실제 성과가 달라질 수 있음을 확인했습니다.</label>
+                        </div>
+                        <div class="innerBox">
+                            <div class="df_btn">
+                                <div class="btn5 l_title_b" @click="fundServiceReq = false;">취소</div>
+                                <div class="btn4 c_fff l_title_b" @click="goProfit();">확인</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="popup_wrap" :class="{ on: memberServiceReq }" @click.self="memberServiceReq = false">
+                <div class="p_box">
+                    <div class="titBox">
+                        <p class="l_title_b">로보어드바이저(RA) 펀드변경 서비스 신청</p>
+                        <img src="assets/Images/main_img6.svg" class="main_img6" />
+                        <div class="c_red2 txtBox_b_red m_text_l tac bm20">
+                            변액보험 로보어드바이저 추천 펀드는 시장 상황에 따라 손실이 발생할 수 있습니다
+                        </div>
+                        <p class="c_55 m_text_l ">VFA는 변액보험 펀드 비중을 알고리즘 분석을 바탕으로 제안 하는 보조 서비스입니다. <span class="c_green">추천 결과는 수익을 보장하거나 특정 성과를 약속하지 않습니다.</span><br />최종 결정은 고객님의 판단과 책임으로 직접 판단해 주세요.</p>
+                        <div class="dashed"></div>
+                        <p class="l_title_m bm8">꼭 알아두세요! </p>
+                        <div class="txt_indent bm15">
+                            <p class="m_text_m bm5">·정기적인 리밸런싱을 유지할 경우</p>
+                            <p class="m_text_l c_55">리스크가 효과적으로 분산되며, 장기적으로 안정적인 운용성과를 기대할 수 있습니다.</p>
+                        </div>
+                        <div class="txt_indent">
+                            <p class="m_text_m c_green bm5">· 리밸런싱을 실행하지 않을 경우</p>
+                            <p class="m_text_l c_55">알고리즘이 제안한 목표 포트폴리오와 실제 운용 결과가 달라 질 수 있습니다.</p>
+                        </div>
+                    </div>
+                    <div class="fixBox">
+                        <div class="innerBox">
+                            <input type="checkbox" id="chk1" class="checkbox" v-model="agree"/>
+                            <label for="chk1" class="label_hold lg_text_m">본인은 RA 알고리즘 추천이 수익을 보장하지 않으며, 리밸런싱 실행 여부에 따라 실제 성과가 달라질 수 있음을 확인했습니다.</label>
+                        </div>
+                        <div class="innerBox">
+                            <div class="df_btn">
+                                <div class="btn5 l_title_b" @click="memberServiceReq = false;">취소</div>
+                                <div class="btn4 c_fff l_title_b" @click="goMemberProfit();">확인</div>
+                            </div>
+                        </div>
+                    </div>
+        
+                </div>
+            </div>
+            <div class="popup_wrap " :class="{ on: fundAddReq }" @click.self="fundAddReq = false">
+                <div class="p_box">
+                    <div class="titBox">
+                        <p class="l_title_b">펀드추천 서비스 요청</p>
+                        <img src="assets/Images/main_img6.svg" class="main_img6" />
+
+                        <p class="c_55 m_text_l bm5">VFA는 현재 <span class="c_green">각 보험사별 대표 저축성 변액보험 상품 2~3종을 우선 지원</span>하고 있어요.</p>
+                        <p class="c_55 m_text_l bm5">해당 상품은 아직 펀드추천 서비스를 지원하지 않지만, 요청을 보내주시면 우선 개발 검토 대상으로 등록됩니다. </p>
+                        <p class="c_55 m_text_l">고객님의 요청은 향후 서비스 지원 순위를 결정하는 데 반영됩니다.</p>
+                    </div>
+                    <div class="fixBox">
+                        <div class="innerBox">
+                            <input type="checkbox" id="chk2" class="checkbox" v-model="agree2"/>
+                            <label for="chk2" class="label_hold lg_text_m">본 상품의 펀드추천 서비스 지원 요청을 진행합니다.</label>
+                        </div>
+                        <div class="innerBox">
+                            <div class="df_btn">
+                                <div class="btn5 l_title_b" @click="fundAddReq = false;">취소</div>
+                                <div class="btn4 c_fff l_title_b" @click="agreeChk();">확인</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="popup_wrap " :class="{ on: chkPop2 }" @click.self="chkPop2 = false">
+                <div class="p_box alert">
+                    <div class="innerBox">
+                        <p class="l_title_b tac">현재는 서비스 이용이 어렵지만,<Br />향후 업데이트를 통해 지원할 예정입니다.</p>
+                    </div>
+                    <div class="innerBox">
+                        <div class="df_btn">
+                            <div class="btn4 c_fff l_title_b" @click="PopupClose();">확인</div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="popup_wrap " :class="{ on: chkPop }" @click.self="chkPop = false">
+                <div class="p_box alert">
+                    <div class="innerBox">
+                        <p class="l_title_b tac">필수 사항을 확인 후<Br />체크해 주세요.</p>
+                    </div>
+                    <div class="innerBox">
+                        <div class="df_btn">
+                            <div class="btn4 c_fff l_title_b" @click="chkPop = false;">확인</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="popup_wrap " :class="{ on: fundAddPopup }" @click.self="closeFundAddPopup()">
+                <div class="p_box">
+                    <div class="titBox">
+                        <p class="l_title_b c_green bm20">맞춤형 추천 펀드가 구성되었어요!</p>
+                        <p class="c_55 m_text_l bm5">VFA는 ‘변액보험 펀드 자문 서비스’로, 펀드변경은 고객님께서 직접 보험사를 통해 진행해주셔야 합니다.</p>
+                        <p class="c_55 m_text_l bm5">추천 포트폴리오는 안내 시점에 변경할 때 가장 최적의 성과를 기대할 수 있어요.</p>
+                        <p class=" m_text_l c_green">지금 바로 펀드를 변경하세요.</p>
+                    </div>
+                    <div class="fixBox">
+                        <div class="innerBox">
+                            <div class="btn4 c_fff l_title_b" @click="closeFundAddPopup();">확인</div>
+                        </div>
+                    </div>
+        
+                </div>
+            </div>
+            <div class="popup_wrap " :class="{ on: methodPop }" @click.self="methodPop = false">
+                <div class="p_box">
+                    <div class="innerBox">
+                        <p class="l_title_b">투자운용 방식이란?</p>
+                        <img src="assets/Images/main_img17.svg" class="main_img6" />
+                        <p class="c_55 m_text_l bm20">고객님의 투자성향과 은퇴까지 남은 기간을 분석 해 아래의 방식이 적용되었습니다.</p>
+                        <div class="txtBox_gray">
+                            <p class="lg_text_b bm20">{{methodTxt}}</p>
+                            <p class="c_33 m_text_l">은퇴까지 남은 기간에 맞춰 위험자산과 안전자산 비중을 자동으로 조절해드립니다. 고객님의 성향을 반영해, 더 안정적인 장기 투자가 가능합니다.</p>
+                        </div>
+                    </div>
+                    <div class="innerBox" :class="{ on : gp_toggle }" @click.self="gp_toggle = false" @click="gpToggle();">
+                        <div class="df_sb bm20 glide_tit">
+                            <p class="l_title_b">글라이드 패스란 ?</p>
+                            <img src="assets/Images/ic_down.svg" />
+                        </div>
+                        <div class="glide_txt">
+
+                            <p class="c_55 m_text_l bm10">고객님의 나이와 은퇴까지 남은 기간에 맞춰, 주식·채권 비중을 점진적으로 조절하는 투자 방식입니다. 은퇴가 가까워질수록 위험을 줄이고, 멀수록 기회를 높이는 구조입니다.</p>
+                            <div class="txtBox_b_gray bm20">
+                                <p class="lg_text_l bm10">은퇴 시점이 가까워질수록 주식 비중을 줄여, 최대 손실 폭을 줄임으로써 손실 회복 기간이 짧아지도록 하는거죠!</p>
+                                <img src="assets/Images/intro_img4.svg" class="intro_img4" />
+                                <img src="assets/Images/intro_img5.svg" class="intro_img5" />
+                            </div>
+                            <p class="title_b bm10">적용하면 어떤 변화가 생기나요?</p>
+                            <p class="m_text_l c_55 bm30">알고리즘이 생성하는 포트폴리오를 바탕으로 위험자산·안전자산 비중만 자동으로 최적화합니다.(자동 리스크 관리 기능)</p>
+                            <p class="title_b bm10">적용하지 않아도 될까요?</p>
+                            <p class="m_text_l c_55 bm30"><span class="c_green">네, 가능합니다.</span> 더 적극적으로 운용해 수익기회를 높이고 싶으시다면 ‘기본 운용형(글라이드패스 미적용)’도 선택하실 수 있습니다.</p>
+                        </div>
+
+                    </div>
+                    <div class="fixBox">
+                        <div class="innerBox">
+                            <div class="btn4 c_fff l_title_b" @click="methodPop = false;">확인</div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="popup_wrap" :class="{ on: rebalncingPopup }" @click.self="rebalncingPopup = false">
+                <div class="p_box">
+                    <div class="innerBox">
+                        <p class="l_title_b">왜 VFA의 ‘정기 리밸런싱’이 중요한가?</p>
+                        <img src="assets/Images/main_img19.svg" class="main_img6" />
+                        <ul class="dot_list bm15 m_text_l c_55">
+                            <li class=" bm10">상승장 대부분이 ‘짧은 기간’에 집중되기 때문 에 꾸준한 비중 유지가 핵심 수익을 놓치지 않는 가장 확실한 방법입니다.
+                            </li>
+                            <li class=" bm10">하락장은 예측이 어려운 구조라 타이밍을 맞추 기보다 주기적으로 포트폴리오를 조정하는 편이 안정적입니다.
+                            </li>
+                            <li class=" bm20">알고리즘이 매 회차마다 시장 데이터를 반영해 최적 비중을 재계산해 주기 때문에, 정기 리밸런 싱만으로도 사실상 ‘수시 최적화’ 효과가 발생합니다.
+                            </li>
+                        </ul>
+                        <div class="c_33 txtBox_green ">
+                            <p class="lg_text_b c_green tac">
+                                시장 예측 보다는 주기적인 리밸런싱이 안정적인 장기 성과를 만듭니다.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="fixBox">
+                        <div class="innerBox">
+                            <div class="btn4 c_fff l_title_b" @click="rebalncingPopup = false;">확인</div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="popup_wrap " :class="{ on: delPop }" @click.self="delPop = false">
+                <div class="p_box alert">
+                    <div class="innerBox">
+                        <p class="l_title_b tac">등록한 상품 정보를<br />삭제할까요?</p>
+                    </div>
+                    <div class="innerBox">
+                        <div class="df_btn">
+                            <div class="btn5 l_title_b"@click="delPopClose();">취소</div>
+                            <div class="btn4 c_fff l_title_b" @click="itemDel();">확인</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="popup_wrap " :class="{ on: DelConfirm }" @click.self="DelConfirm = false">
+                <div class="p_box alert">
+                    <div class="innerBox">
+                        <p class="l_title_b tac">삭제되었습니다.</p>
+                    </div>
+                    <div class="innerBox">
+                        <div class="df_btn">
+                            <div class="btn4 c_fff l_title_b" @click="DelConfirm = false">확인</div>
+    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+    <script>
+        var vm = new Vue({
+            el: "#divVue",
+            data: {
+                isLoading: false,
+
+                member_id: '',
+                member_info: [],
+                contractList: [],
+                memberContractList: [],
+                memberContractMP:[],
+                customList: [],
+                mergedList: [],
+                mpList:[],
+
+                isRemain_yn : 2,
+                days_remaining: '',
+                selectID: 0,
+                selectIFaCode: '',
+
+                fundServiceReq: false,
+                memberServiceReq: false,
+                fundAddReq: false,
+
+                chkPop: false,
+                chkPop2: false,
+                methodPop: false,
+                methodTxt: '',
+                rebalncingPopup: false,
+                fundAddPopup: false,
+                gp_toggle: false,
+                delPop: false,
+                selectDelID: '',
+                DelConfirm: false,
+
+                agree: false, //
+                agree2: false, //
+
+                charts: {},
+
+
+                selectReqContractID: '',
+                selectReqItemCode: '',
+            },
+            created() {
+                this.member_id = document.getElementById("sID").value;
+
+                var showVFAResult = 0;
+                showVFAResult = new URLSearchParams(location.search).get("showVFAResult");
+
+                if (showVFAResult == 1) {
+                    this.fundAddPopup = true;
+                }
+
+                this.init();
+            },
+            methods: {
+                async init() {
+                    this.isLoading = true;
+
+                    try {
+                        //await this.getData();
+                        await this.getmemberInfo();
+                        await this.getContractList(); //실제 계약 리스트
+                        await this.getCustomList();   //사용자가 추가한 리스트
+                        await this.getMemberContractList();
+                        await this.getMemberContractMP();
+                        //this.contractMerge();
+
+                        const allDays = [
+                            ...this.contractList,
+                            ...this.memberContractMP
+                        ]
+                            .map(item => parseInt(item.days_remaining))
+                            .filter(day => !isNaN(day) && day >= 0);
+
+                        this.days_remaining = allDays.length > 0
+                            ? Math.min(...allDays)
+                            : '';
+
+                        this.$nextTick(() => {
+                            this.contractList.forEach(item => {
+                                if (!item.update_date) return;
+
+                                this.createPieChart(item);
+                            });
+
+                            this.memberContractMP.forEach(item => {
+                                if (!item.update_date) return;
+                                this.createPieChart(item);
+                            });
+                        });
+                    }
+                    finally {
+                        this.isLoading = false;
+                    }
+                  
+                },
+
+                // 추천 펀드 안내 팝업 닫기 — 리로드 없이 URL 파라미터(showVFAResult·id) 제거해 새로고침해도 다시 안 뜨게
+                closeFundAddPopup() {
+                    this.fundAddPopup = false;
+                    history.replaceState(null, "", location.pathname);
+                },
+
+                getData() {
+
+                    fetch('Data/contract.json')
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error('contract.json 파일을 읽을 수 없습니다.');
+                            }
+                            return res.json();
+                        })
+                        .then(async json => {
+
+                            console.log('계약 JSON:', json);
+
+                            this.contractData = json;
+                            this.contractInfo = json.contract_info || [];
+
+                            // 한줄씩 저장
+                            for (const item of this.contractInfo) {
+
+                                var params = JSON.stringify({
+                                    target: "VFANew",
+                                    cmd: "ContractAddIM",
+
+                                    contract_name: item.contract_name,
+                                    member_id: this.member_id,
+                                    contract_date: item.contract_date,
+                                    invest_amount: Number(String(item.contract_money).replace(/,/g, '')),
+                                    contract_code: item.contract_code,
+                                    contract_status: item.contract_status
+
+                                });
+                                console.log(params);
+                                try {
+
+                                    let result = await httpPost(urlReturnJsonAPI, params);
+
+                                    console.log(result);
+
+                                } catch (error) {
+
+                                    console.log(error);
+
+                                }
+                            }
+
+                        })
+                        .catch(error => {
+
+                            console.error(error);
+                            alert('계약 정보를 불러오지 못했습니다.');
+
+                        });
+                },
+
+                async getmemberInfo() {
+                    var params = JSON.stringify({
+                        target: "VFANew", cmd: "MemberInfoIM",
+                        member_id: this.member_id
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.member_info = json.items[0];
+                                this.member_info.member_birth = this.getAge(this.member_info.member_birth);
+                            } else { console.log(json.msg); }
+                        })
+                        .catch((error) => console.log(error));
+                },
+
+                getAge(birth) {
+                    if (!birth) return 0;
+
+                    const today = new Date();
+                    const birthDate = new Date(birth);
+
+                    let age = today.getFullYear() - birthDate.getFullYear();
+
+                    const m = today.getMonth() - birthDate.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+
+                    return age;
+                },
+
+                async getMemberContractList() {
+                    var params = JSON.stringify({
+                        target: "VFANew", cmd: "MemberContract",
+                        member_id: this.member_id
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+
+                                this.memberContractList = json.items;
+ 
+  
+                            } else { console.log(json.msg); }
+                        })
+                        .catch((error) => console.log(error));
+
+                },
+
+                async getMemberContractMP() {
+                    var params = JSON.stringify({
+                        target: "VFANew", cmd: "MemberContractMP",
+                        member_id: this.member_id
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+
+                                this.memberContractMP = json.items;
+
+                            } else { console.log(json.msg); }
+                        })
+                        .catch((error) => console.log(error));
+
+                },
+
+                async getContractList() {
+                    var params = JSON.stringify({
+                        target: "ONENew", cmd: "GetPFList",
+                        member_id: this.member_id
+                        //member_id : this.member_id
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.contractList = json.items;
+                            } else { console.log(json.msg); }
+                        })
+                        .catch((error) => console.log(error));
+                },
+
+                async getCustomList() {
+                    var params = JSON.stringify({
+                        target: "ONENew", cmd: "GetPFCustomList",
+                        member_id: this.member_id
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.customList = json.items;
+                            } else { console.log(json.msg); }
+                        })
+                        .catch((error) => console.log(error));
+
+                },
+
+                contractMerge() {
+                    // 1️ 가입 계약 리스트
+                    const contractMapped = this.contractList.map(v => ({
+                        contract_date: v.contract_date,
+                        corp_name: v.corp_name,
+                        id: v.id,
+                        item_name: v.item_name,
+                        plan_dtm: v.plan_dtm,
+                        plan_goal: v.plan_goal,
+                        account_number: v.account_number,
+                        invest_amount: v.invest_amount || '0',
+                        keep_state: v.keep_state,
+                        update_date: '',      // 계약은 기본적으로 없음
+                        update_days: '',
+                        target_age: '',
+                        gp_apply_yn: '',
+                        reg_dtm: '',
+                        ifa_item_code: v.ifa_item_code,
+                        fund_name_list: '',
+                        fund_ratio_list: '',
+                        invest_purpose: '',
+                        source: 'contract'    // 출처 표시 (디버깅용)
+                    }));
+
+                    // 2️ 커스텀 추천 리스트 (update_date 있음)
+                    const customMapped = this.memberContractList.map(v => ({
+                        contract_date: v.contract_date,
+                        corp_name: v.corp_name,
+                        id: v.id,
+                        item_name: v.item_name || '',
+                        plan_dtm: '',
+                        plan_goal: v.plan_goal,
+                        invest_amount: v.invest_amount || '0',
+                        account_number: v.account_number,
+                        keep_state: '',
+                        target_age: v.target_age,
+                        update_date: v.update_date,
+                        update_days: v.update_days,
+                        gp_apply_yn: v.gp_apply_yn,
+                        fund_name_list: v.fund_name_list,
+                        fund_ratio_list: v.fund_ratio_list,
+                        reg_dtm: v.reg_dtm.slice(0, 10),
+                        invest_purpose: v.invest_purpose,
+                        ifa_item_code: v.ifa_item_code,
+                        source: 'custom'
+                    }));
+
+                    const map = new Map();
+
+                    // 3️ 두 배열을 한 번에 순회 (핵심 로직)
+                    [...contractMapped, ...customMapped].forEach(item => {
+                        const key = item.account_number || `noacc_${item.id}`;
+
+                        if (!map.has(key)) {
+                            // 처음 들어오는 데이터
+                            map.set(key, item);
+                        } else {
+                            const existing = map.get(key);
+
+                            const existingHasUpdate = existing.update_date && existing.update_date !== '';
+                            const currentHasUpdate = item.update_date && item.update_date !== '';
+
+                            // 핵심 조건
+                            // 기존이 update_date 없고, 새 데이터는 update_date 있으면 교체
+                            if (!existingHasUpdate && currentHasUpdate) {
+                                map.set(key, item);
+                            }
+
+                            // 둘 다 update_date 있으면 custom(최신 데이터) 우선
+                            else if (existingHasUpdate && currentHasUpdate) {
+                                if (item.source === 'custom') {
+                                    map.set(key, item);
+                                }
+                            }
+                            // 둘 다 없으면 기존(contract) 유지 → 아무것도 안함
+                        }
+                    });
+
+                    // 4️ 최종 리스트
+                    this.mergedList = Array.from(map.values());
+
+                    console.log("합쳐진 리스트:", this.mergedList);
+                },
+
+                createPieChart(item) {
+                    console.log(item);
+                    if (!item.fund_name_list || !item.fund_ratio_list) return;
+
+                    // 기존 차트 제거 (중복 방지)
+                    if (this.charts[item.id]) {
+                        this.charts[item.id].dispose();
+                    }
+
+                    let names = item.fund_name_list.split(",");
+                    let ratios = item.fund_ratio_list.split(",");
+
+
+                    let chartData = this.getSortedFundData(item).map(f => ({
+                        category: f.name,
+                        value: f.ratio
+                    }));
+
+                    let chart = am4core.create("chart_" + item.id, am4charts.PieChart);
+                    chart.data = chartData;
+
+                    //애니메이션 제거
+                    chart.hiddenState.properties.opacity = 1;
+                    chart.defaultState.transitionDuration = 0;
+
+                    chart.innerRadius = am4core.percent(60);
+
+                    let pieSeries = chart.series.push(new am4charts.PieSeries());
+                    pieSeries.dataFields.value = "value";
+                    pieSeries.dataFields.category = "category";
+                    pieSeries.labels.template.disabled = true;
+                    pieSeries.ticks.template.disabled = true;
+
+                    // 색상 고정 (여기로 이동)
+                    pieSeries.colors.list = [
+                        am4core.color("#F7B401"),
+                        am4core.color("#2578D6"),
+                        am4core.color("#31C270"),
+                        am4core.color("#A855F7"),
+                        am4core.color("#EF5A3C"),
+                        am4core.color("#14B8A6"),
+                        am4core.color("#EC4899"),
+                        am4core.color("#6366F1")
+                    ];
+                    pieSeries.slices.template.tooltipText = "{category} : {value.percent.formatNumber('#.0')}%";
+                    // 퍼센트 라벨
+                    pieSeries.labels.template.text = "{value.percent.formatNumber('#.0')}%";
+                    pieSeries.slices.template.togglable = false;
+                    pieSeries.slices.template.states.getKey("hover").properties.scale = 1;
+
+
+                    // 중앙 텍스트
+                    let label = chart.seriesContainer.createChild(am4core.Label);
+                    label.text = "추천\n펀드";
+                    label.horizontalCenter = "middle";
+                    label.verticalCenter = "middle";
+                    label.fontSize = 16;
+                    label.textAlign = "middle";
+
+                    // ⭐ 차트 저장
+                    this.charts[item.id] = chart;
+                },
+                getSortedFundData(item) {
+
+                    if (!item.fund_name_list || !item.fund_ratio_list) return [];
+
+                    let names = item.fund_name_list.split(",");
+                    let ratios = item.fund_ratio_list.split(",");
+
+                    let list = names.map((name, i) => ({
+                        name: name.trim(),
+                        ratio: Number(ratios[i])
+                    }));
+
+                    // ⭐ 차트와 동일하게 오름차순 정렬
+                    list.sort((a, b) => a.ratio - b.ratio);
+
+                    return list;
+                },
+
+                  getFundList(item) {
+
+                    if (!item.fund_name_list || !item.fund_ratio_list) return [];
+
+                    let names = item.fund_name_list.split(",");
+                    let ratios = item.fund_ratio_list.split(",");
+
+                    return names.map((name, i) => ({
+                        name: name.trim(),
+                        ratio: Number(ratios[i])
+                    }));
+                },
+
+                getColor(index) {
+
+                    const colors = [
+                        "#F7B401",
+                        "#2578D6",
+                        "#31C270",
+                        "#A855F7",
+                        "#EF5A3C",
+                        "#14B8A6",
+                        "#EC4899",
+                        "#6366F1"
+                    ];
+
+                    return colors[index % colors.length];
+                },
+
+                keepStateName(keep_state) {
+                    switch (keep_state) {
+                        case "1":
+                            return "정상";
+                        case "2":
+                            return "3회연체";
+                        case "3":
+                            return "1회연체";
+                        case "4":
+                            return "2회연체";
+                        case "5":
+                            return "실효";
+                        default:
+                            return "";
+                    }
+                },
+
+
+                goOpenVFA() {
+                    var url = 'Fund_edit.html?id=2001';
+                    window.open(url, '_blank');
+
+                },
+
+                openFundServiceReq(id, item_code) {
+                    console.log(item_code);
+                    var params = JSON.stringify({
+                        target: "VFANew", cmd: "MPList",
+                        item_code: item_code
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+
+                                this.mpList = json.items;
+                                if (this.mpList.length > 0) {
+
+                                    this.fundServiceReq = true;
+                                    this.selectID = id;
+
+                                } else {
+                                    alert("MP가 없습니다. 펀드 서비스를 이용할 수 없습니다.");
+                                }
+                                
+                            } else { console.log(json.msg); }
+                        })
+                        .catch((error) => console.log(error));
+
+                    
+                },
+
+                openMemberServiceReq(id, item_code) {
+                    console.log(item_code);
+                    var params = JSON.stringify({
+                        target: "VFANew", cmd: "MPList",
+                        item_code: item_code
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+
+                                this.mpList = json.items;
+                                if (this.mpList.length > 0) {
+
+                                    this.memberServiceReq = true;
+                                    this.selectID = id;
+                                    this.selectIFaCode = item_code;
+                                } else {
+                                    alert("MP가 없습니다. 펀드 서비스를 이용할 수 없습니다.");
+                                }
+
+                            } else { console.log(json.msg); }
+                        })
+                        .catch((error) => console.log(error));
+
+
+                },
+
+                goProfit() {
+                    if (this.agree) {
+                        this.agree = false;
+                        this.fundServiceReq = false;
+                        var url = 'profit_check.html?id=' + this.selectID;
+                        window.location.href = url;
+                    } else {
+                        this.chkPop = true;
+                        return;
+                    
+                    }
+                    
+                },
+
+                goMemberProfit() {
+                    if (this.agree) {
+                        this.agree = false;
+                        this.fundServiceReq = false;
+                        var url = 'profit_check.html?id=' + this.selectID + '&sCode=' + this.selectIFaCode;
+                        window.location.href = url;
+                    } else {
+                        this.chkPop = true;
+                        return;
+
+                    }
+
+                },
+
+                openFundAddReq(item) {
+                    this.selectReqContractID = item.id;
+                    this.selectReqItemCode = item.item_code;
+                    this.agree2 = false;
+                    this.fundAddReq = true;
+                },
+
+                PopupClose() {
+                     this.chkPop2 = false;
+                     this.fundAddReq = false;
+                
+                },
+
+                delPopClose() {
+                        this.delPop = false;
+
+                },
+
+                delPopOpen(val) {
+                    this.delPop = true;
+                    this.selectDelID = val;
+                },
+
+                itemDel() {
+                    this.delPopClose();
+
+                    var params = JSON.stringify({
+                        target: "VFANew", cmd: "ItemDel",
+                        id: this.selectDelID
+                    });
+
+                    httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.DelConfirm = true;
+                                this.getMemberContractList();
+
+                            } else { console.log(json.msg); }
+                        })
+                        .catch((error) => console.log(error));
+
+                },
+
+
+                agreeChk() {
+                    if (!this.agree2) {
+                        this.chkPop = true;
+                        return;
+                    }
+
+                    var params = JSON.stringify({
+                        target: "VFANew",
+                        cmd: "ServiceReqAdd",
+                        contract_id: this.selectReqContractID,
+                        item_code: this.selectReqItemCode,
+                        member_id: this.member_id
+                    });
+
+                    httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.fundAddReq = false;
+                                this.chkPop2 = true;
+                                this.agree2 = false;
+
+                                this.getContractList();
+                                this.getMemberContractList();
+                                this.getMemberContractMP();
+                            } else {
+                                alert(json.msg);
+                            }
+                        })
+                        .catch((error) => console.log(error));
+                },
+
+                goFundAdd() {
+                    var url = 'Fund_add.html';
+                    window.location.href = url;
+
+                },
+
+                goCurrentRB() { 
+
+                    var url = 'Rebalancing.html';
+                    window.location.href = url;
+
+                },
+
+                gpToggle() {
+                    if (!this.gp_toggle)
+                        this.gp_toggle = true;
+                    else
+                        this.gp_toggle = false;
+
+                },
+
+                goDetail(id, account) {
+                    console.log(id, account);
+                    var url = 'Fund_edit.html?id=' + id;
+                    window.location.href = url;
+                },
+
+                openMethodPop(val) {
+                    if (val === '1') {
+                        this.methodTxt = '자동 배분 조절형(글라이드 패스 적용)';
+
+                    }
+                    else if (val === '2') {
+                        this.methodTxt = '고정 배분 운용형';
+
+                    }
+                    this.methodPop = true;
+
+                },
+
+
+                openChangeStatus(mode, id) {
+                    try {
+                        const member = (this.member_info && this.member_info.member_id) ? this.member_info.member_id : this.member_id;
+                        const idVal = id || '';
+                        var url = 'Change_Status.html?mode=' + encodeURIComponent(mode) + '&id=' + encodeURIComponent(idVal);
+                        window.location.href = url;
+                    } catch (e) {
+                        console.error('openChangeStatus error', e);
+                    }
+                },
+
+                goIntro() {
+
+                    var url = 'Intro.html';
+                    location.href = url;
+
+
+                },
+
+                goGuide() {
+
+                    var url = 'Guide.html';
+                    location.href = url;
+
+
+                },
+
+                goManual() {
+
+                    var url = 'Manual.html?btn_yn=2';
+                    location.href = url;
+
+
+                },
+
+                numWithComma: function (x) { return NumberWithCommas(x); },
+
+            },
+            computed: {
+                hasChartData() {
+
+                    const allList = [
+                        ...this.contractList,
+                        ...this.memberContractMP
+                    ];
+
+                    return allList.some(item =>
+                        item.update_date &&
+                        item.fund_name_list &&
+                        item.fund_ratio_list
+                    );
+                }
+            },
+
+
+        });
+
+        var swiper = new Swiper(".mySwiper", {
+            slidesPerView: "auto",
+            loop: true,
+            autoplay: {
+                delay: 2500,
+                disableOnInteraction: false,
+            },
+        });
+    </script>
+</body>
+</html>

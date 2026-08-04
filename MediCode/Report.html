@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>메디코드 분석 리포트</title>
+    <link href="assets/styles/medi_code.css" rel="stylesheet" />
+    <link href="assets/styles/header.css" rel="stylesheet" />
+    <link href="styles/portfolio-overrides.css" rel="stylesheet" />
+    <script src="assets/js/vendor/vue.min.js"></script>
+</head>
+<body>
+<form id="form1">
+    <div class="h_wrap wrap"><div class="back_btn" role="button" tabindex="0" aria-label="이전 화면" onclick="history.back();"></div></div>
+    <div id="divVue">
+        <div class="wrap medi_main">
+            <img src="assets/images/g_logo.png" class="logo" alt="MediCode" />
+            <p class="title mb5">{{ memberName }}님의<br />건강 데이터 분석 결과</p>
+
+            <div class="slider-labels mb05">
+                <span class="data-label health-data f14 gr_color">건강검진 데이터 {{ percent }}%</span>
+                <span class="data-label gene-data f14 gr_color">유전자 데이터 {{ 100 - percent }}%</span>
+            </div>
+            <input id="weightSlider"
+                   v-model.number="percent"
+                   type="range"
+                   min="0"
+                   max="100"
+                   step="10"
+                   class="custom-slider mb3"
+                   :disabled="!canMoveSlider"
+                   :style="{ '--split': percent + '%' }"
+                   @input="onPercentInput" />
+
+            <p class="s_txt mb2">
+                {{ guideText }}<br />
+                <span class="f13">현재 결과: 건강검진 {{ percent }}%, 유전자 {{ 100 - percent }}%</span>
+            </p>
+
+            <p class="s_txt mb2" v-if="loading">분석 결과를 불러오는 중입니다.</p>
+            <p class="s_txt mb2" v-if="errorMessage">{{ errorMessage }}</p>
+
+            <ul id="simple-accordion" class="mb2">
+                <li class="acc-item acc-item1">
+                    <div class="acc-head" role="button" tabindex="0" @click="toggleRisk('serious')" @keyup.enter="toggleRisk('serious')">
+                        <span class="s_title tit_txt"><img src="assets/images/Serious.svg" alt="" /> 심각</span>
+                        <span class="s_title tit_num">{{ serious.length }}개<img src="assets/images/accord_icon.svg" :class="{ up: activeRisk === 'serious' }" alt="" /></span>
+                    </div>
+                    <div class="acc-cont" :class="{ open: activeRisk === 'serious' }" :style="{ maxHeight: activeRisk === 'serious' ? 'none' : null }">
+                        <ul class="sub_items">
+                            <li v-for="item in serious" :key="'serious-' + item.disease_name" @click="openDetail(item)"><p class="mb2">{{ item.disease_name }}</p><div class="lineWrap"><div class="l_bg"><div class="line" :style="{ width: item.total_score + '%' }"></div></div></div></li>
+                            <li v-if="serious.length === 0">심각 단계에 해당하는 질병이 없습니다.</li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="acc-item acc-item2">
+                    <div class="acc-head" role="button" tabindex="0" @click="toggleRisk('danger')" @keyup.enter="toggleRisk('danger')">
+                        <span class="s_title tit_txt"><img src="assets/images/Dangers.svg" alt="" /> 위험</span>
+                        <span class="s_title tit_num">{{ danger.length }}개<img src="assets/images/accord_icon.svg" :class="{ up: activeRisk === 'danger' }" alt="" /></span>
+                    </div>
+                    <div class="acc-cont" :class="{ open: activeRisk === 'danger' }" :style="{ maxHeight: activeRisk === 'danger' ? 'none' : null }">
+                        <ul class="sub_items">
+                            <li v-for="item in danger" :key="'danger-' + item.disease_name" @click="openDetail(item)"><p class="mb2">{{ item.disease_name }}</p><div class="lineWrap"><div class="l_bg"><div class="line" :style="{ width: item.total_score + '%' }"></div></div></div></li>
+                            <li v-if="danger.length === 0">위험 단계에 해당하는 질병이 없습니다.</li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="acc-item acc-item3">
+                    <div class="acc-head" role="button" tabindex="0" @click="toggleRisk('caution')" @keyup.enter="toggleRisk('caution')">
+                        <span class="s_title tit_txt"><img src="assets/images/Caution.svg" alt="" /> 주의</span>
+                        <span class="s_title tit_num">{{ caution.length }}개<img src="assets/images/accord_icon.svg" :class="{ up: activeRisk === 'caution' }" alt="" /></span>
+                    </div>
+                    <div class="acc-cont" :class="{ open: activeRisk === 'caution' }" :style="{ maxHeight: activeRisk === 'caution' ? 'none' : null }">
+                        <ul class="sub_items">
+                            <li v-for="item in caution" :key="'caution-' + item.disease_name" @click="openDetail(item)"><p class="mb2">{{ item.disease_name }}</p><div class="lineWrap"><div class="l_bg"><div class="line" :style="{ width: item.total_score + '%' }"></div></div></div></li>
+                            <li v-if="caution.length === 0">주의 단계에 해당하는 질병이 없습니다.</li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="acc-item acc-item4">
+                    <div class="acc-head" role="button" tabindex="0" @click="toggleRisk('good')" @keyup.enter="toggleRisk('good')">
+                        <span class="s_title tit_txt"><img src="assets/images/Fine.svg" alt="" /> 양호</span>
+                        <span class="s_title tit_num">{{ good.length }}개<img src="assets/images/accord_icon.svg" :class="{ up: activeRisk === 'good' }" alt="" /></span>
+                    </div>
+                    <div class="acc-cont" :class="{ open: activeRisk === 'good' }" :style="{ maxHeight: activeRisk === 'good' ? 'none' : null }">
+                        <ul class="sub_items">
+                            <li v-for="item in good" :key="'good-' + item.disease_name" @click="openDetail(item)"><p class="mb2">{{ item.disease_name }}</p><div class="lineWrap"><div class="l_bg"><div class="line" :style="{ width: item.total_score + '%' }"></div></div></div></li>
+                            <li v-if="good.length === 0">양호 단계에 해당하는 질병이 없습니다.</li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</form>
+<script src="scripts/medicode-demo-store.js"></script>
+<script src="scripts/report.js"></script>
+</body>
+</html>

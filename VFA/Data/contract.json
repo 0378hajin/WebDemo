@@ -1,0 +1,11 @@
+{
+  "contract_info": [
+    {
+      "contract_name": "스마트 변액연금보험 (데모)",
+      "contract_date": "2026-07-22",
+      "contract_money": "15,000,000",
+      "contract_code": "DEMO-VFA-001",
+      "contract_status": "정상"
+    }
+  ]
+}

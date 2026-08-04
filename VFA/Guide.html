@@ -1,0 +1,282 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+     <script src="vendor/Scripts/common.js"></script>
+     <script src="vendor/Common/common2.js"></script>
+     <script src="vendor/Scripts/vue@2.3.3/vue.min.js"></script>
+     <script src="Scripts/vfa-mock-api.js"></script>
+     <link href="assets/CSS/reset.css" rel="stylesheet" />
+     <link href="assets/CSS/vfa.css" rel="stylesheet" />
+     
+     <script src="vendor/Scripts/core.js"></script>
+     <script src="vendor/Scripts/charts.js"></script>
+     <script src="vendor/Scripts/animated.js"></script>
+
+    
+    <title>VFA</title>
+</head>
+<body>
+    <form id="form1">
+        <input type="hidden" id="shrid" value="F000">
+        <div class="wrap main" id="divVue" >
+            <div class="header">
+
+                <div>
+                </div>
+                <p class="m_title_b">VFA란?</p>
+                <div class="df">
+                        <img src="assets/Images/ic_close.svg" class="ic_close" @click="goBack();"/>
+
+                </div>
+            </div>
+            <div class="sec">
+                <p class="sum_title_b bm10">추천은 <span class="c_green">VFA</span>가, <br />변경은 고객님이 <span class="c_green">직접</span></p>
+                <p class="c_55 m_text_l bm20">VFA는 고객님께 맞는 펀드 포트폴리오를 안내해요. 실제 변경 신청은 가입한 보험사에서 진행해 주세요.</p>
+                <img src="assets/Images/intro_img22.svg" class="bm20 " />
+                <div class="c_33 txtBox_green m_text_l tac bm30">
+                    <img src="assets/Images/intro_img23.svg" class="intro_img8 bm15" />
+                    <p class="">
+                        보험사 홈페이지·앱·고객센터에서 <span class="c_green">펀드변경을 신청</span>할 수 있어요.
+                    </p>
+                </div>
+                <div class="line bm30"></div>
+
+                                <p class="sum_title_b bm10">펀드변경 어떻게 하나요?</p>
+
+                
+                <ul class="info_disc_list bg_green bm10">
+                    <li>
+                        <div class="disc_box">
+                            <img src="assets/Images/intro_img15.svg" />
+                        </div>
+                        <div class="txt">
+                            <p class="lg_text_m ">보험사 홈페이지</p>
+                            <p class="m_text_l c_33">로그인 후 신청</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="disc_box">
+                            <img src="assets/Images/intro_img16.svg" />
+                        </div>
+                        <div class="txt">
+                            <p class="lg_text_m ">모바일 앱</p>
+                            <p class="m_text_l c_33">로그인 후 신청</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="disc_box">
+                            <img src="assets/Images/intro_img17.svg" />
+                        </div>
+                        <div class="txt">
+                            <p class="lg_text_m ">고객센터</p>
+                            <p class="m_text_l c_33">안내 후 신청</p>
+                        </div>
+                    </li>
+                </ul>
+                <p class="bm30 m_text_l c_55">※ 메뉴 이름은 <span class="c_green">펀드변경</span> 또는 <span class="c_green">펀드관리</span> 일 수 있어요.</p>
+                <div class="line bm30"></div>
+                                                <p class="sum_title_b bm10">변경할 것은 <span class="c_green">두 가지</span>예요</p>
+                <p class="c_55 m_text_l bm20">펀드변경은 아래 두 항목을 함께 확인하면 더 정확하게 적용할 수 있어요.</p>
+                <img src="assets/Images/intro_img24.svg" class="bm20 " />
+                         
+                <ul class="info_disc_list bm30">
+                    <li>
+                        <div class="disc_box">
+                            <img src="assets/Images/intro_img15.svg" />
+                        </div>
+                        <div class="txt">
+                            <p class="lg_text_m ">펀드투입비율 변경</p>
+                            <p class="m_text_l c_33">앞으로 납입되는 보험료가 어떤 펀드로 들어갈지 정해요. <span class="c_green">(앞으로 들어갈 돈의 방향 설정)</span></p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="disc_box">
+                            <img src="assets/Images/intro_img16.svg" />
+                        </div>
+                        <div class="txt">
+                            <p class="lg_text_m ">적립금 변경</p>
+                            <p class="m_text_l c_33">이미 쌓여 있는 적립금을 새로운 구성으로 바꿔요. <span class="c_green">(기존에 쌓인 돈의 구성 변경)</span></p>
+                        </div>
+                    </li>
+                </ul>
+                <div class="line bm30"></div>
+
+                            <p class="sum_title_b bm10">처리기간과 <span class="c_green">도움</span> 안내</p>
+                <p class="c_55 m_text_l bm20">펀드변경은 반영까지 <span class="c_green">보통 2~5영업일</span>이 걸릴 수 있어요.</p>
+    
+                <p class="l_title_m bm5">꼭 기억해 주세요.</p>
+
+                                <ul class="dash_list bm30">
+                    <li>
+                        <img src="assets/Images/intro_img25.svg" class="intro_img9" />
+                        <p class="m_text_l">추천 포트폴리오는 가급적 <span class="c_green">빠르게 적용</span>해 주세요.</p>
+                    </li>
+                    <li>
+                        <img src="assets/Images/intro_img26.svg" class="intro_img9" />
+                        <p class="m_text_l">도움이 필요하면 <span class="c_green">담당 FA에게 문의</span>해 주세요.</p>
+                    </li>
+                    <li>
+                        <img src="assets/Images/intro_img27.svg" class="intro_img9" />
+                        <p class="m_text_l">VFA는 <span class="c_green">자동으로 펀드를 변경하지 않아요.</span></p>
+                    </li>
+                </ul>
+                <div class="line bm30"></div>
+
+                            <p class="l_title_m bm10" v-if="info && info.member_name">도움이 필요하신가요?</p>
+                            <div class="txtBox_gray bm30" v-if="info && info.member_name" >
+                                <div class="df_profile">
+                                    <div class="imgBox">
+                                        <img src="assets/Images/basic.svg" alt="담당 FA 기본 프로필" />
+                                    </div>
+                                    <div>
+                                        <p class="lg_text_b  ">담당 FA : {{ info.member_name }}</p>
+                                        <p class="lg_text_l c_33">{{ position }}</p>
+                                    </div>
+                                </div>
+
+
+                                <div class="df_btn tm20" style="gap:10px;">
+                                    <div class="btn2 c_green l_text_b" style="background:#fff;" @click="sendSMS();">문자 보내기</div>
+                                    <div class="btn1 c_fff l_text_b" @click="callFA();">전화 문의</div>
+                                </div>
+                            </div>
+                <p class="l_title_m bm5">자주 묻는 질문</p>
+
+                <div class="accordion_card bm10" :class="{ on: openFaq === 0 }">
+                    <div class="acc_head" @click="toggleFaq(0)">
+                        <p class="lg_text_b">지금 바로 변경해야 하나요?</p>
+                        <img src="assets/Images/ic_down.svg" />
+                    </div>
+                    <div class="m_text_l acc_body">
+                        추천 포트폴리오는 생성 시점 기준으로 산출됩니다. 최적의 결과를 위해 가급적 빠른 시일 내 변경하는 것을 권장합니다.
+                    </div>
+                </div>
+                                <div class="accordion_card bm10" :class="{ on: openFaq === 1 }">
+                    <div class="acc_head" @click="toggleFaq(1)">
+                        <p class="lg_text_b">펀드변경 수수료가 있나요?</p>
+                        <img src="assets/Images/ic_down.svg" />
+                    </div>
+                    <div class="m_text_l acc_body">
+                        대부분의 변액보험은 펀드변경 수수료가 없거나 매우 낮은 수준입니다. 자세한 내용은 가입하신 보험사 약관을 확인해주세요.
+                    </div>
+                </div>
+                                <div class="accordion_card bm10" :class="{ on: openFaq === 2 }">
+                    <div class="acc_head" @click="toggleFaq(2)">
+                        <p class="lg_text_b">VFA가 자동으로 펀드를 변경해주나요?</p>
+                        <img src="assets/Images/ic_down.svg" />
+                    </div>
+                    <div class="m_text_l acc_body">
+                        아니요. VFA는 투자자문 및 추천 정보를 제공하며, 실제 펀드변경은 고객님이 직접 보험사를 통해 진행해야 합니다.
+                    </div>
+                </div>
+                                <div class="accordion_card bm20" :class="{ on: openFaq === 3 }">
+                    <div class="acc_head" @click="toggleFaq(3)">
+                        <p class="lg_text_b">리밸런싱 알림은 얼마나 자주 오나요?</p>
+                        <img src="assets/Images/ic_down.svg" />
+                    </div>
+                    <div class="m_text_l acc_body">
+                        30일, 60일, 90일 중 원하시는 주기를 직접 선택하실 수 있습니다. 기본값은 90일이며, 선택한 주기에 맞춰 카카오톡으로 안내해 드립니다.
+                    </div>
+                </div>
+
+
+            </div>
+
+            
+
+        <script>
+            var vm = new Vue({
+                el: '#divVue',
+                data: {
+                    info: [],
+                    corp_name: '',
+                    corp_url: '',
+                    corp_tel: '',
+                    position: '',
+
+
+                    openFaq: 0
+
+                },
+                created() {
+
+                    this.init();
+                },
+                methods: {
+                    async init() {
+                        await this.intro_info();
+
+                    },
+
+                    async intro_info() {
+                        var params = JSON.stringify({
+                            target: 'Mohom',
+                            cmd: 'MobileHomeMemberInfo',
+                            hrid: this.hrid,
+                        });
+
+                        return httpPost(urlReturnJsonAPI, params)
+                            .then((json) => {
+                                if (json.result == 1) {
+                                    this.info = json.items[0];
+                                    this.position = this.GetCorpPosition(this.info.corp_jop_position, this.info.corp_level);
+                                } else {
+                                    alert(json.msg);
+                                }
+
+                            })
+                            .catch((error) => VueAlert(error));
+                    },
+
+                    GetCorpPosition(corp_jop_position, corp_level) {
+
+                        var corp_position = corp_jop_position;
+                        switch (corp_position) {
+                            case "":
+                            case "없음":
+                            case "사용안함":
+                                corp_position = corp_level;
+                                break;
+                            default:
+                                break;
+                        }
+                        return corp_position;
+                    },
+
+
+                    sendSMS() {
+                        const phoneNumber = this.info.member_mobile;
+                        window.location.href = `sms:${phoneNumber}`;
+                    },
+
+
+                    callFA() {
+                        const phoneNumber = this.info.member_mobile;
+                        window.location.href = `tel:${phoneNumber}`;
+
+                    },
+
+                    toggleFaq(index) {
+                        this.openFaq =
+                            this.openFaq === index ? -1 : index;
+                    },
+
+                    goBack() {
+                        history.go(-1);
+                    }
+
+                },
+
+
+            });
+        </script>
+    </form>
+</body>
+</html>
+

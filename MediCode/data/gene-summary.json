@@ -1,0 +1,10 @@
+﻿{
+    "loaded":  true,
+    "loadedAt":  "2026-08-03",
+    "itemCount":  240,
+    "customer":  {
+                     "gender":  "M",
+                     "age":  30
+                 },
+    "source":  "portfolio-sample"
+}

@@ -1,0 +1,1471 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="vendor/Scripts/common.js"></script>
+    <script src="vendor/Common/common2.js"></script>
+    <script src="vendor/Scripts/vue@2.3.3/vue.min.js"></script>
+    <script src="vendor/Scripts/partners.js"></script>
+    <script src="Scripts/vfa-mock-api.js"></script>
+    <script src="vendor/Scripts/core.js"></script>
+    <script src="vendor/Scripts/charts.js"></script>
+    <script src="vendor/Scripts/animated.js"></script>
+    <link href="assets/CSS/reset.css" rel="stylesheet" />
+    <link href="assets/CSS/vfa.css" rel="stylesheet" />
+    
+
+    
+    <title>VFA</title>
+</head>
+<body>
+    <form id="form1">
+        <input type="hidden" id="sID" value="demo.vfa@example.com">
+        <input type="hidden" id="shrid" value="F000">
+        <input type="hidden" id="sKakao" value="N">
+        <div id="divVue" v-cloak>
+            <div class="loading_wrap" v-if="isLoading">
+                <div class="loading_box">
+                    <div class="spinner"></div>
+                    <p>데이터를 불러오는 중입니다.</p>
+                </div>
+            </div>
+            <div class="wrap main" >
+                <div class="header">
+                    <div>
+                    </div>
+                    <p class="m_title_b">자세히 보기</p>
+                    <div class="df">
+                        <img v-if="!isKakao" src="assets/Images/ic_close.svg" class="ic_close" @click="goPrev();"/>
+
+                    </div>
+                </div>
+                <div class="g_sec ">
+                    <p class="title_b bm10">로보어드바이저(RA) 추천 펀드 정보</p>
+                    <div class="insuBox bm10">
+                        <div class="titBox">
+                            <div class="df_sb">
+                                <img :src="getPartnerImage(fundInfo.corp_name)" />
+                            </div>
+                            <p class="l_title_b">{{fundInfo.item_name}}</p>
+                            <p class="l_text_l c_33" v-if="fundInfo.account_number !== undefined">증권번호 : {{fundInfo.account_number}}</p>
+
+                        </div>
+                        <div class="innerBox2 infoWrap">
+                            <p class="title_b">추천 펀드 현황  <img src="assets/Images/ic_popup.svg" class="ic_popup" @click="rebalncingPopup = true;"/></p>
+                            <ul class="infoBox tm20 bm20">
+                                <li>
+                                    <p class="l_text_l">현재 펀드 생성일자</p>
+                                    <p class="m_text_b c_green">{{fundInfo.reg_dtm}}</p>
+                                </li>
+                                <li>
+                                    <div class="l_text_l">다음 리밸런싱 예정일
+
+                                    </div>
+                                    <p class="m_text_b">{{fundInfo.update_date}}</p>
+                                </li>
+                            </ul>
+                            <div class="amchart">
+                                <div id="fundChart" style="width:100%;height:220px;"></div>
+
+                                <ul class="chartList bm30">
+                                    <li v-for="(fund, index) in getFundList()" :key="index">
+                                        <div class="chart_tit">
+                                            <div class="dot"
+                                                 :style="{ backgroundColor: getColor(index) }">
+                                            </div>
+
+                                            <p class="m_text_l">
+                                                {{ fund.name }}
+                                            </p>
+                                        </div>
+
+                                        <div class="chart_line"></div>
+
+                                        <p class="m_text_l">
+                                            {{ fund.ratio }}%
+                                        </p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="innerBox2 ">
+                            <div class="df_sb">
+                                <div class="lg_text_m">
+                                    펀드 추천 자문사
+                                    <img src="assets/Images/ic_popup.svg" class="ic_popup" @click="guidePopup = true;"/>
+                                </div>
+                                <img src="assets/Images/logo_RAI.svg" class="ic_logo"/>
+                            </div>
+                        </div>
+                        <div class="btnBox ">
+
+                            <div class="c_33 txtBox_green m_text_l tac">
+                                <img src="assets/Images/intro_img6.svg" class="intro_img6 bm15" />
+                                <p class="">
+                                    추천 포트폴리오는 펀드 생성 시점에 변경하면 최적의 성과를 기대할 수 있어요.
+                                    <br />
+                                    <span class="lg_text_b c_green">지금 바로 펀드를 변경하세요.</span>
+                                </p>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <div v-if="!isKakao" class="btn1 c_fff l_title_b bm30" @click="fundGuidePopup = true;">펀드변경 가이드 안내</div>
+
+                    <p class="title_b bm4" v-if="!isKakao">VFA 알고리즘 테스트 성과
+                                    <img src="assets/Images/ic_popup.svg" class="ic_popup" @click="resultPopup = true;"/>
+
+                    </p>
+                    <p class="m_text_l bm10 c_33 wb_b" v-if="!isKakao">
+                        본 화면의 수익률은 고객님의 실제 운용 성과가 아닙니다.
+                        VFA 알고리즘의 대표 테스트 결과를 예시로 안내해드립니다.
+                    </p>
+
+                    <!-- 탭 -->
+                    <div class="fund_tabs bm30" v-if="!isKakao">
+                        <input id="three_m" type="radio" name="tab_item" value="6m" v-model="period"/>
+                        <label class="tab_item" for="three_m">6개월</label>
+
+                        <input id="six_m" type="radio" name="tab_item" value="1y" v-model="period"/>
+                        <label class="tab_item" for="six_m">1년</label>
+
+                        <input id="one_y" type="radio" name="tab_item" value="3y" v-model="period"/>
+                        <label class="tab_item" for="one_y">3년</label>
+
+                        <input id="three_y" type="radio" name="tab_item" value="all" v-model="period"/>
+                        <label class="tab_item" for="three_y">전체</label>
+
+                        <!-- tab_content 하나만 -->
+                        <div class="tab_content insuBox">
+                            <div class="innerBox2">
+                                <div class="df_sb tac bm20">
+                                    <div class="box_f5">
+                                        <p class="lg_text_b">대표 혼합형 펀드</p>
+                                        <p class="l_text_l c_33">벤치마크 수익률</p>
+                                        <p class="lg_text_b">{{ currentData.benchmark }}%</p>
+                                    </div>
+
+                                    <p class="lg_text_b">VS</p>
+
+                                    <div class="box_750">
+                                        <p class="lg_text_b c_green">VFA 추천 펀드</p>
+                                        <p class="l_text_l c_33">알고리즘 수익률</p>
+                                        <p class="lg_text_b c_green">{{ currentData.algorithm }}%</p>
+                                    </div>
+                                </div>
+
+                                <p class="l_text_l c_55 tac">
+                                    <span class="l_text_b">벤치마크</span> : {{bmFund}}<br />
+                                    <span class="l_text_b c_green">알고리즘</span> : VFA 포트폴리오
+                                </p>
+                            </div>
+
+                            <div class="innerBox2">
+                                <p class="subtext_l c_88">공시 시작일: 23.07.01</p>
+
+                                <div class="amgraph" id="vfaChart" style="width:100%;height:260px;"></div>
+
+                                <div class="table_border bm40">
+                                    <table class="fund_table ">
+                                        <thead>
+                                            <tr class="l_text_m">
+                                                <td rowspan="2">펀드</td>
+                                                <td colspan="4">수익률</td>
+                                            </tr>
+                                            <tr class="l_text_m">
+                                                <td>6개월</td>
+                                                <td>1년</td>
+                                                <td>3년</td>
+                                                <td>전체</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="l_text_l ">
+                                                <td>벤치마크</td>
+
+                                                <td>
+                                                    {{ Number(vfaData['6m'].benchmark).toFixed(2) }}
+                                                </td>
+
+                                                <td>
+                                                    {{ Number(vfaData['1y'].benchmark).toFixed(2) }}
+                                                </td>
+
+                                                <td>
+                                                    {{ Number(vfaData['3y'].benchmark).toFixed(2) }}
+                                                </td>
+
+                                                <td>
+                                                    {{ Number(vfaData['all'].benchmark).toFixed(2) }}
+                                                </td>
+                                            </tr>
+
+                                            <tr class="c_green l_text_l ">
+                                                <td>알고리즘</td>
+
+                                                <td>
+                                                    {{ Number(vfaData['6m'].algorithm).toFixed(2) }}
+                                                </td>
+
+                                                <td>
+                                                    {{ Number(vfaData['1y'].algorithm).toFixed(2) }}
+                                                </td>
+
+                                                <td>
+                                                    {{ Number(vfaData['3y'].algorithm).toFixed(2) }}
+                                                </td>
+
+                                                <td>
+                                                    {{ Number(vfaData['all'].algorithm).toFixed(2) }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+                                <div class="title_b bm10">
+                                    VFA 알고리즘으로<br />
+                                    <div class="inline_txt c_green title_b" @click="periodPopup = true;">
+                                        {{ period === 'all' ? '전체 기간' : periodLabel + ' 전' }}
+                                        <img src="assets/Images/ic_down_g.svg" />
+                                    </div>
+                                    <span>투자했다면?</span>
+                                </div>
+
+                                <div class="txtBox_green bm10">
+                                    <img src="assets/Images/main_img14.svg" class="main_img14" />
+                                    <p class="l_text_l bm20 tac">{{ period === 'all' ? '전체기간으로부터' : periodLabel + ' 전부터' }} 매달 같은 조건으로 투자했다고 가정할 경우, VFA알고리즘의 추천 펀드는 해당 상품의 혼합형 펀드 대비 <span class="c_green">약 {{ profitDiffText }} 원 {{ profitDiffLabel }}</span>이 더 발생한 것으로 나타났어요.</p>
+                                    <table class="vfa_table">
+                                        <thead class="l_text_b c_fff">
+                                            <tr>
+                                                <td class="l_text_m">구분</td>
+                                                <td>벤치마크</td>
+                                                <td>알고리즘</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="l_text_l bm10">
+                                            <tr>
+                                                <td class="l_text_m">월 보험료</td>
+                                                <td>{{ monthlyPremiumText }}</td>
+                                                <td class="l_text_b c_green">{{ monthlyPremiumText }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="l_text_m">총 납입금</td>
+                                                <td>{{ totalPaidText }}</td>
+                                                <td class="l_text_b c_green">{{ totalPaidText }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="l_text_m">누적 수익률</td>
+                                                <td>{{ currentData.benchmark }}%</td>
+                                                <td class="l_text_b c_green">{{ currentData.algorithm }}%</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="l_text_m">적립금</td>
+                                                <td>{{ benchmarkAssetText }}</td>
+                                                <td class="l_text_b c_green">{{ algorithmAssetText }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="txtBox_gray">
+                                    <p class="l_title_m bm10">꼭 알아두세요</p>
+                                    <ul class="dot_list m_text_l c_55">
+                                        <li>본 화면의 수익률 및 적립금은 VFA 알고리즘의 대표 테스트 운용 결과 예시입니다.</li>
+                                        <li>과거의 성과는 미래의 수익을 보장하지 않습니다.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="title_b bm10">리밸런싱 진행 현황</p>
+                    <div class="txtBox_white bm10 df_rebalancing">
+                        <div>
+                            <img src="assets/Images/main_img16.svg" />
+                            <p class="lg_text_l c_33">현재까지 리밸런싱 횟수</p>
+                        </div>
+                        <p class="lg_text_b c_green">{{rebalancingCount}}회</p>
+                    </div>
+                    <div class="txtBox_white bm10 df_rebalancing">
+                        <div>
+                            <img src="assets/Images/main_img15.svg" />
+                            <p class="lg_text_l c_33">리밸런싱 주기</p>
+                        </div>
+                        <p class="lg_text_b c_red2">{{fundInfo.update_days}}일</p>
+                    </div>
+
+                    <div class="insuBox bm20" v-if="rebalancingViewList.length > 0">
+                        <div class="innerBox2" v-for="group in rebalancingViewList" :key="group.std_date">
+                            <div class="df_fs">
+                                <div class="reval_count m_text_b c_green" v-if="group.label === '현재'">{{ group.label }}</div>
+                                <div class="reval_count2 m_text_b c_dd" v-else>{{ group.label }}</div>
+                                <div class="w100p">
+                                    <p class="c_88 subtext_l bm7">리밸런싱 발생일 : {{ formatRebalancingDate(group.std_date) }}</p>
+                                    <ul>
+                                        <li class="df_sb" v-for="item in group.items" :key="item.id">
+                                            <p class="lg_text_l c_33 rebal_name">{{ item.fund_name }}</p>
+                                            <p class="lg_text_m">{{ item.fund_ratio }}%</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                        <div v-else class="insuBox bm20">
+                            <div class="innerBox2">
+                                <div class="df_fs">
+                                    <div class="w100p">
+                                        <p class="c_88 subtext_l bm7">조회된 리밸런싱 데이터가 없습니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <div v-if="!isKakao" class="btn4 c_fff l_title_b" @click="delPopup = true;">펀드변경 서비스 취소하기</div>
+
+                    </div>
+                </div>
+
+                <div class="popup_wrap" :class="{ on: fundGuidePopup }" @click.self="fundGuidePopup = false;">
+                    <div class="p_box">
+                        <div class="innerBox">
+                            <p class="l_title_b bm10">꼭 알아두세요</p>
+                            <p class="m_text_l c_55">VFA는 펀드 추천 및 자문 정보를 제공하는 서비스입니다.​<br />실제 펀드 변경은 가입한 보험사의 정책에 따라 고객님이 직접 진행해야 합니다.​</p>
+                            <div class="dashed"></div>
+                            <div class="bm30">
+                                <p class="l_title_m bm20">1. 보험사에서 펀드변경 진행</p>
+                                <a class="btn2 df_sb c_green bm10" style="border-radius:15px;padding: 15px;" @click="goCorpUrl();">
+                                    <p class="  l_text_b">{{corp_name}} 홈페이지 바로가기</p>
+                                    <img src="assets/Images/ic_arrow_green.svg"/>
+                                </a>
+                                <a class="btn2 df_sb c_green" style="border-radius:15px;padding: 15px;" @click="callCorpTel();">
+                                    <p class="  l_text_b">{{corp_name}} 고객센터 문의하기</p>
+                                    <img src="assets/Images/ic_arrow_green.svg"/>
+                                </a>
+                            </div>
+                            <div class="bm30">
+                                <p class="l_title_m bm10">2. 펀드변경 방법</p>
+                                <p class="m_text_l bm10 c_55">두 가지를 모두 진행해야 완전한 변경이 이루어집니다.​</p>
+                                <div class="df_sb" style="gap:10px;">
+                                    <div class="txtBox_green w100">
+                                        <img src="assets/Images/main_img23.svg" class="main_img22"/>
+                                        <p class="lg_text_m tac">펀드투입비율 변경</p>
+                                    </div>
+                                    <div class="txtBox_green w100">
+                                        <img src="assets/Images/main_img21.svg" class="main_img22"/>
+                                        <p class="lg_text_m tac">적립금 이전</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                            <div class="bm20">
+                                <p class="l_title_m bm10">3. 처리 기간</p>
+                                <p class="m_text_l bm10 c_55">펀드변경은 실제 반영까지 일정 기간이 소요될 수 있습니다.​</p>
+                                <div class="txtBox_green">
+                                    <img src="assets/Images/main_img22.svg" class="main_img22"/>
+                                    <p class="lg_text_m tac bm10"><span class="lg_text_b c_green">2~5</span>영업일</p>
+                                    <p class="l_text_l c_55 tac">※ 펀드 유형에 따라 차이가 있을 수 있습니다.​</p>
+                                </div>
+                            </div>
+                            <div class="dashed"></div>
+                            <p class="l_title_m bm10" v-if="info && info.member_name">도움이 필요하신가요?</p>
+                            <div class="txtBox_gray bm30" v-if="info && info.member_name" >
+                                <div class="df_profile">
+                                    <div class="imgBox">
+                                        <img src="assets/Images/basic.svg" alt="담당 FA 기본 프로필" />
+                                    </div>
+                                    <div>
+                                        <p class="lg_text_b  ">담당 FA : {{ info.member_name }} FA</p>
+                                        <p class="lg_text_l c_33">{{ position }}</p>
+                                    </div>
+                                </div>
+
+
+                                <div class="df_sb tm20" style="gap:10px;">
+                                    <div class="btn2 c_green l_text_b" style="background:#fff;" @click="sendSMS();">문자 보내기</div>
+                                    <div class="btn1 c_fff l_text_b" @click="callFA();">전화 문의</div>
+                                </div>
+                            </div>
+
+                            <p class="l_title_m bm10">자주 묻는 질문</p>
+                            <div class="innerBox gray bm20" :class="{ on: openFaq === 0 }">
+                                <div class="df_sb  glide_tit" @click="toggleFaq(0)">
+                                    <p class="l_title_b">지금 바로 변경해야 하나요?</p>
+                                    <img src="assets/Images/ic_down.svg" />
+                                </div>
+                                <div class="glide_txt" v-show="openFaq === 0">
+                                    <p class="c_33 m_text_l">추천 포트폴리오는 생성 시점 기준으로 산출됩니다. 최적의 결과를 위해 가급적 빠른 시일 내 변경하는 것을 권장합니다.</p>
+                                </div>
+                            </div>
+                            <div class="innerBox gray bm20" :class="{ on: openFaq === 1 }">
+                                <div class="df_sb  glide_tit" @click="toggleFaq(1)">
+                                    <p class="l_title_b">펀드변경 수수료가 있나요?</p>
+                                    <img src="assets/Images/ic_down.svg" />
+                                </div>
+                                <div class="glide_txt" v-show="openFaq === 1">
+                                    <p class="c_33 m_text_l">대부분의 변액보험은 펀드변경 수수료가 없거나 매우 낮은 수준입니다. 자세한 내용은 가입하신 보험사 약관을 확인해주세요. 생성일에 즉시 변경하는 것을 권장합니다.</p>
+                                </div>
+                            </div>
+                            <div class="innerBox gray" :class="{ on: openFaq === 2 }">
+                                <div class="df_sb  glide_tit" @click="toggleFaq(2)">
+                                    <p class="l_title_b">VFA가 자동으로 펀드를 변경해주나요</p>
+                                    <img src="assets/Images/ic_down.svg" />
+                                </div>
+                                <div class="glide_txt" v-show="openFaq === 2">
+                                    <p class="c_33 m_text_l">아니요. VFA는 투자자문 및 추천 정보를 제공하며, 실제 펀드변경은 고객님이 직접 보험사를 통해 진행해야 합니다.</p>
+                                </div>
+                                </div>
+                            </div>   
+                            </div>
+
+                           <div class="fixBox">
+                            <div class="innerBox">
+                                <div class="btn4 c_fff l_title_b" @click="fundGuidePopup = false;">확인</div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+                <div class="popup_wrap" :class="{ on: rebalncingPopup }" @click.self="rebalncingPopup = false;">
+                    <div class="p_box">
+                        <div class="innerBox">
+                            <p class="l_title_b">왜 VFA의 ‘정기 리밸런싱’이 중요한가?</p>
+                            <img src="assets/Images/main_img19.svg" class="main_img6" />
+                            <ul class="dot_list bm15 m_text_l c_55">
+                                <li class=" bm10">상승장 대부분이 ‘짧은 기간’에 집중되기 때문에 꾸준한 비중 유지가 핵심 수익을 놓치지 않는 가장 확실한 방법입니다.
+                                </li>
+                                <li class=" bm10">하락장은 예측이 어려운 구조라 타이밍을 맞추기보다 주기적으로 포트폴리오를 조정하는 편이 안정적입니다.
+                                </li>
+                                <li class=" bm20">알고리즘이 매 회차마다 시장 데이터를 반영해 최적 비중을 재계산해 주기 때문에, 정기 리밸런싱만으로도 사실상 ‘수시 최적화’ 효과가 발생합니다.
+                                </li>
+                            </ul>
+                            <div class="c_33 txtBox_green ">
+                                <p class="lg_text_b c_green tac">
+                                    시장 예측 보다는 주기적인 리밸런싱이 안정적인 장기 성과를 만듭니다.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="fixBox">
+                            <div class="innerBox">
+                                <div class="btn4 c_fff l_title_b" @click="rebalncingPopup = false;">확인</div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup_wrap" :class="{ on: resultPopup }" @click.self="resultPopup = false;">
+                    <div class="p_box">
+                        <div class="innerBox">
+                            <p class="l_title_b">VFA 알고리즘 테스트 성과란?</p>
+                            <img src="assets/Images/main_img20.svg" class="main_img6" />
+                            <ul class="dot_list bm15 m_text_l c_55">
+                                <li class=" bm10">본 수익률은 해당 상품의 대표 알고리즘 테스트 수익률을 공시 기준으로 안내합니다.
+                                </li>
+                                <li class=" bm10">글라이드패스(자산비중 자동배분) 미적용 기준이며, 고객님의 실제 운용 수익률과 다를 수 있습니다.
+                                </li>
+                                <li class=" bm20">본 성과는 90일 정기 리밸런싱 기준으로 산출되었습니다. 
+                                </li>
+                            </ul>
+                            <div class="c_33 txtBox_green ">
+                                <p class="lg_text_b c_green tac">
+                                    시장 예측 보다는 주기적인 리밸런싱이 안정적인 장기 성과를 만듭니다.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="fixBox">
+                            <div class="innerBox">
+                                <div class="btn4 c_fff l_title_b" @click="resultPopup = false;">확인</div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+ 
+                <div class="popup_wrap" :class="{ on: guidePopup }" @click.self="guidePopup = false;">
+                    <div class="p_box">
+                        <div class="innerBox">
+                            <p class="l_title_b bm10">알고리즘 제공 자문사 안내</p>
+                            <div class="advisorBox bm10" @click="goRAI();">
+                                <img src="assets/Images/logo_RAI.svg" class="ic_logo" />
+                                <div>
+                                    <p class="c_33 lg_text_l">펀드 추천 자문</p>
+                                    <p class="lg_text_b">로보어드바이저투자자문(주)</p>
+                                </div>
+                            </div>
+                            <div class="advisorBox bm10" @click="goDna();">
+                                <img src="assets/Images/logo_dna.svg" class="ic_logo"/>
+                                <div>
+                                    <p class="c_33 lg_text_l">RA 알고리즘 엔진</p>
+                                    <p class="lg_text_b">(주)데이터앤애널리틱스</p>
+                                </div>
+                            </div>
+                            <ul class="infoBox tm20 bm20">
+                                <li>
+                                    <p class="lg_text_l c_33">담당자</p>
+                                    <p class="lg_text_b ">엄대식 대리(자문사)</p>
+                                </li>
+                                <li>
+                                    <p class="lg_text_l c_33">연락처</p>
+                                    <div class="lg_text_b">
+                                        <img src="assets/Images/ic_call.svg" class="ic_call" />
+                                        <a href="tel:02-6207-0115">02-6207-0115</a>
+                                    </div>
+                                </li>
+                            </ul>
+                            <p class="lg_text_b bm10">알고리즘 소개</p>
+                            <p class="c_55 m_text_l bm10">변액보험에 최적화된 투자 스타일과 위험 성향에 맞춰 AI가 포트폴리오를 제안해드립니다.</p>
+                            <div class="c_33 txtBox_green m_text_l tac">
+                                <img src="assets/Images/intro_img6.svg" class="intro_img6 bm15" />
+                                <p class="">
+                                    금융위원회 테스트베드를 통과한 DNA 알고리즘을 기반으로, RAI자문사에서 고객님께 최적화된 펀드를 추천합니다.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="fixBox">
+                            <div class="innerBox">
+                                <div class="btn4 c_fff l_title_b" @click="guidePopup = false;">확인</div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup_wrap " :class="{ on: periodPopup }" @click.self="periodPopup = false;">
+                    <div class="p_box">
+                        <div class="innerBox">
+                            <p class="l_title_b bm10">기간 선택</p>
+                            <div class="form_toggle df_radio">
+                                <div class="form_radio_btn l_title_l">
+                                    <input id="vfa01" type="radio" name="vfa" value="6m" v-model="period"/>
+                                    <label for="vfa01">6개월</label>
+                                </div>
+
+                                <div class="form_radio_btn l_title_l">
+                                    <input id="vfa02" type="radio" name="vfa" value="1y" v-model="period"/>
+                                    <label for="vfa02">1년</label>
+                                </div>
+
+                                <div class="form_radio_btn l_title_l">
+                                    <input id="vfa03" type="radio" name="vfa" value="3y" v-model="period"/>
+                                    <label for="vfa03">3년</label>
+                                </div>
+
+                                <div class="form_radio_btn l_title_l">
+                                    <input id="vfa04" type="radio" name="vfa" value="all" v-model="period"/>
+                                    <label for="vfa04">전체</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fixBox">
+                            <div class="innerBox">
+                                <div class="btn4 c_fff l_title_b" @click="periodPopup = false;">확인</div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup_wrap" :class="{ on: delPopup }" @click.self="delPopup = false;">
+                    <div class="p_box alert">
+                        <div class="innerBox">
+                            <p class="l_title_b tac">서비스를 취소하면 해당 상품의 펀드 정보와 설정이 모두 초기화됩니다. 그래도 취소하시겠어요?</p>
+                        </div>
+                        <div class="innerBox">
+                            <div class="df_btn">
+                                <div class="btn4 c_fff l_title_b" @click="deleteFund();">예</div>
+                                <div class="btn3 c_fff l_title_b" @click="delPopup = false;">아니오</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </form>
+    <script>
+        var vm = new Vue({
+            el: "#divVue",
+            data: {
+                isLoading: false,
+
+                id: '',
+                account: '',
+                hrid: '',
+                info: {},
+                corp_name: '',
+                corp_url: '',
+                corp_tel: '',
+                member_id: '',
+                position: '',
+                isKakao: false,
+
+                fundInfo: [],
+                rebalancing: [],
+                simulItems: [],
+                bmFundItems: [],
+                bmFund:'',
+
+                period: 'all',
+                monthlyPremium: 1000000,
+
+                vfaData: {
+                    '6m': { benchmark: 0, algorithm: 0, months: 6 },
+                    '1y': { benchmark: 0, algorithm: 0, months: 12 },
+                    '3y': { benchmark: 0, algorithm: 0, months: 36 },
+                    'all': { benchmark: 0, algorithm: 0, months: 0 }
+                },
+
+                chartData: {
+                    '6m': [],
+                    '1y': [],
+                    '3y': [],
+                    'all': []
+                },
+
+                chart: null,
+
+                guidePopup: false,
+                rebalncingPopup: false,
+                delPopup: false,
+                periodPopup: false,
+                resultPopup: false,
+                fundGuidePopup: false,
+
+                openFaq: 0
+                
+            },
+            created() {
+
+                this.id = new URLSearchParams(location.search).get("id");
+                this.account = new URLSearchParams(location.search).get("account");
+                this.hrid = new URLSearchParams(location.search).get("hrid");
+                this.member_id = document.getElementById("sID").value;
+                this.isKakao = document.getElementById("sKakao").value === "Y";
+
+                this.init();
+            },
+
+            watch: {
+                period() {
+                    this.updateChart();
+                }
+            },
+
+            methods: {
+                
+
+                async init() {
+                    this.isLoading = true;
+
+                    try {
+                        if (this.hrid !== '') {
+                            await this.intro_info();
+
+                        }
+
+                        await this.getFundInfo();
+                        await this.getRebalancing();
+
+                        // 카카오 진입 시 성과 섹션 숨김 → SimulList 호출 및 차트 생성 불필요
+                        if (this.isKakao) return;
+
+                        await this.getSimul();
+                        await this.getBMFund();
+                        await this.getCorpInfo();
+                        this.$nextTick(() => {
+                            this.createChart();
+                        });
+                    }
+                    finally {
+                        this.isLoading = false;
+                    }
+
+                    
+                },
+
+                async getCorpInfo() {
+                    let corpName = (this.fundInfo.corp_name || '').trim();
+
+                    const corpNameMap = {
+                        'CHUBB': '처브라이프생명',
+                        'KB라이프': 'KB라이프생명',
+                        'KB라이프P': 'KB라이프생명',
+                        '메트라이프': '메트라이프생명',
+                        '신한라이프': '신한라이프생명'
+                    };
+
+                    corpName = corpNameMap[corpName] || corpName;
+
+                    var params = JSON.stringify({
+                        target: 'VFANew',
+                        cmd: 'VFACorpInfo',
+                        corp_name: corpName
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1 && json.items.length > 0) {
+                                var items = json.items[0];
+
+                                this.corp_name = items.corp_name;
+                                this.corp_url = items.corp_url;
+                                this.corp_tel = items.corp_tel;
+                            } else {
+                                alert('보험사 정보를 찾을 수 없습니다. 보험사명: ' + corpName);
+                            }
+                        })
+                        .catch((error) => VueAlert(error));
+                },
+
+                 async intro_info() {
+                     var params = JSON.stringify({
+                         target: 'Mohom',
+                         cmd: 'MobileHomeMemberInfo',
+                         hrid: this.hrid,
+                     });
+
+                     return httpPost(urlReturnJsonAPI, params)
+                         .then((json) => {
+                             if (json.result == 1) {
+                                 this.info = json.items[0];
+                                 this.position = this.GetCorpPosition(this.info.corp_jop_position, this.info.corp_level);
+                             } else {
+                                 alert(json.msg);
+                             }
+
+                         })
+                         .catch((error) => VueAlert(error));
+                 },
+
+                 GetCorpPosition(corp_jop_position, corp_level) {
+
+                    var corp_position = corp_jop_position;
+                    switch (corp_position) {
+                        case "":
+                        case "없음":
+                        case "사용안함":
+                            corp_position = corp_level;
+                            break;
+                        default:
+                            break;
+                    }
+                    return corp_position;
+                },
+
+
+                getFundList() {
+
+                    if (!this.fundInfo.fund_name_list ||
+                        !this.fundInfo.fund_ratio_list) {
+                        return [];
+                    }
+
+                    let names = this.fundInfo.fund_name_list.split(",");
+                    let ratios = this.fundInfo.fund_ratio_list.split(",");
+
+                    return names.map((name, i) => ({
+                        name: name.trim(),
+                        ratio: Number(ratios[i])
+                    }))
+                        .sort((a, b) => a.ratio - b.ratio);
+                },
+
+                createFundChart() {
+
+                    if (!this.fundInfo.fund_name_list) return;
+
+                    let chartData = this.getFundList().map(f => ({
+                        category: f.name,
+                        value: f.ratio
+                    }));
+
+                    let chart = am4core.create(
+                        "fundChart",
+                        am4charts.PieChart
+                    );
+
+                    chart.data = chartData;
+                    chart.innerRadius = am4core.percent(60);
+
+                    let pieSeries =
+                        chart.series.push(new am4charts.PieSeries());
+
+                    pieSeries.dataFields.value = "value";
+                    pieSeries.dataFields.category = "category";
+
+                    pieSeries.labels.template.disabled = true;
+                    pieSeries.ticks.template.disabled = true;
+
+                    pieSeries.colors.list = [
+                        am4core.color("#F7B401"),
+                        am4core.color("#2578D6"),
+                        am4core.color("#31C270"),
+                        am4core.color("#A855F7"),
+                        am4core.color("#EF5A3C"),
+                        am4core.color("#14B8A6")
+                    ];
+
+                    let label =
+                        chart.seriesContainer.createChild(am4core.Label);
+
+                    label.text = "추천\n펀드";
+                    label.horizontalCenter = "middle";
+                    label.verticalCenter = "middle";
+                    label.fontSize = 16;
+                },
+
+                getColor(index) {
+
+                    const colors = [
+                        "#F7B401",
+                        "#2578D6",
+                        "#31C270",
+                        "#A855F7",
+                        "#EF5A3C",
+                        "#14B8A6",
+                        "#EC4899",
+                        "#6366F1"
+                    ];
+
+                    return colors[index % colors.length];
+                },
+
+
+                async getBMFund() {
+                    var params = JSON.stringify({
+                        target: "VFANew",
+                        cmd: "BMFund",
+                        item_code: this.fundInfo.item_code
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.bmFundItems = json.items[0] || [];
+                                this.bmFund = this.bmFundItems.fund_name;
+                            } else {
+                                alert(json.msg);
+                            }
+                        })
+                        .catch((error) => VueAlert(error));
+
+                },
+
+                async getSimul() {
+                    if (!this.fundInfo || !this.fundInfo.item_code) return;
+
+                    var params = JSON.stringify({
+                        target: "VFANew",
+                        cmd: "SimulList",
+                        item_code: this.fundInfo.item_code
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.simulItems = json.items || [];
+                                this.makePeriodData();
+                            } else {
+                                alert(json.msg);
+                            }
+                        })
+                        .catch((error) => VueAlert(error));
+                },
+
+                makePeriodData() {
+                    const validList = (this.simulItems || [])
+                        .filter(x => x.std_date && x.bm_price != null && x.simul_price != null)
+                        .map(x => {
+                            const dateStr = String(x.std_date).substring(0, 10);
+
+                            return {
+                                date: new Date(dateStr + "T00:00:00"),
+                                dateStr: dateStr,
+                                bm_price: Number(x.bm_price),
+                                simul_price: Number(x.simul_price)
+                            };
+                        })
+                        .filter(x =>
+                            !isNaN(x.date.getTime()) &&
+                            !isNaN(x.bm_price) &&
+                            !isNaN(x.simul_price) &&
+                            x.bm_price > 0 &&
+                            x.simul_price > 0
+                        )
+                        .sort((a, b) => a.date - b.date);
+
+                    if (validList.length === 0) return;
+
+                    this.setPeriodData('6m', validList, 6);
+                    this.setPeriodData('1y', validList, 12);
+                    this.setPeriodData('3y', validList, 36);
+                    this.setAllPeriodData(validList);
+                },
+
+                setAllPeriodData(list) {
+
+                    let filtered = list
+                        .filter(x => x.date.getDate() === 1)
+                        .sort((a, b) => a.date - b.date);
+
+                    if (filtered.length < 2) return;
+
+                    const firstBm = filtered[0].bm_price;
+                    const firstSimul = filtered[0].simul_price;
+
+                    const chartList = filtered.map(x => ({
+                        date: x.date,
+                        benchmark: Number((((x.bm_price / firstBm) - 1) * 100).toFixed(2)),
+                        algorithm: Number((((x.simul_price / firstSimul) - 1) * 100).toFixed(2))
+                    }));
+
+                    const last = chartList[chartList.length - 1];
+
+                    // 전체 개월 수 계산
+                    const months =
+                        (filtered[filtered.length - 1].date.getFullYear() - filtered[0].date.getFullYear()) * 12 +
+                        (filtered[filtered.length - 1].date.getMonth() - filtered[0].date.getMonth());
+
+                    this.chartData.all = chartList;
+
+                    this.vfaData.all = {
+                        benchmark: last.benchmark,
+                        algorithm: last.algorithm,
+                        months: months
+                    };
+                },
+
+                setPeriodData(periodKey, list, monthCount) {
+
+                    // 기준일: 데이터 최신일이 아니라 오늘
+                    const endDate = new Date();
+                    endDate.setHours(0, 0, 0, 0);
+
+                    // 오늘 기준 N개월 전
+                    const startLimit = new Date(endDate);
+                    startLimit.setMonth(startLimit.getMonth() - monthCount);
+                    startLimit.setHours(0, 0, 0, 0);
+
+                    // 오늘 기준 기간 안의 데이터만 사용
+                    let filtered = list.filter(x =>
+                        x.date >= startLimit &&
+                        x.date <= endDate
+                    );
+
+                    if (filtered.length < 2) return;
+
+                    // 날짜 오름차순 정렬
+                    filtered = filtered.sort((a, b) => a.date - b.date);
+
+                    // 월별 1일 기준 데이터 사용
+                    // 정확히 1일 데이터가 없으면 해당 월의 가장 빠른 데이터 사용
+                    const monthMap = {};
+
+                    filtered.forEach(x => {
+
+                        const ym =
+                            x.date.getFullYear() + "-" +
+                            String(x.date.getMonth() + 1).padStart(2, "0");
+
+                        if (x.date.getDate() === 1) {
+                            monthMap[ym] = x;
+                        }
+
+                    });
+
+                    filtered = Object.values(monthMap)
+                        .sort((a, b) => a.date - b.date);
+
+                    if (filtered.length < 2) return;
+
+                    const firstBm = filtered[0].bm_price;
+                    const firstSimul = filtered[0].simul_price;
+
+                    const chartList = filtered.map(x => ({
+                        date: x.date,
+                        benchmark: Number((((x.bm_price / firstBm) - 1) * 100).toFixed(2)),
+                        algorithm: Number((((x.simul_price / firstSimul) - 1) * 100).toFixed(2))
+                    }));
+
+                    const last = chartList[chartList.length - 1];
+
+                    this.chartData[periodKey] = chartList;
+
+                    this.vfaData[periodKey] = {
+                        benchmark: last.benchmark,
+                        algorithm: last.algorithm,
+                        months: monthCount
+                    };
+                },
+
+                async getFundInfo() {
+
+                    let params = {};
+
+                    // account 값이 없거나 undefined면
+                    if (!this.account || this.account === 'undefined') {
+
+                        params = JSON.stringify({
+                            target: "VFANew",
+                            cmd: "MemberContractMP",
+                            id: this.id,
+                            member_id: this.member_id
+                        });
+                        
+
+                    } else {
+
+                        params = JSON.stringify({
+                            target: "VFANew",
+                            cmd: "MemberContractView",
+                            id: this.id,
+                            member_id: this.member_id
+                        });
+
+                    }
+
+                    console.log(params);
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+
+                            if (json.result == 1) {
+
+                                this.fundInfo = json.items[0];
+
+                                this.$nextTick(() => {
+                                    this.createFundChart();
+                                });
+
+                                if (this.fundInfo.create_dtm) {
+                                    this.fundInfo.reg_dtm = this.fundInfo.create_dtm.slice(0, 10);
+                                }
+                                else if (this.fundInfo.reg_dtm) {
+                                    this.fundInfo.reg_dtm = this.fundInfo.reg_dtm.slice(0, 10);
+                                }
+
+                            } else {
+
+                                alert(json.msg);
+
+                            }
+
+                        })
+                        .catch((error) => VueAlert(error));
+                },
+
+
+                async getRebalancing() {
+                    var params = JSON.stringify({
+                        target: "VFANew", cmd: "RebalacingView",
+                        id: this.id
+                    });
+                    
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.rebalancing = json.items;
+
+                            } else { alert(json.msg); }
+                        })
+                        .catch((error) => VueAlert(error));
+                },
+
+                formatRebalancingDate(date) {
+                    if (!date) return "";
+
+                    const d = new Date(date);
+                    const yy = String(d.getFullYear()).slice(2);
+                    const mm = String(d.getMonth() + 1).padStart(2, "0");
+                    const dd = String(d.getDate()).padStart(2, "0");
+
+                    return yy + "-" + mm + "-" + dd;
+                },
+
+                createChart() {
+                    if (this.chart) {
+                        this.chart.dispose();
+                    }
+
+                    am4core.useTheme(am4themes_animated);
+
+                    var chart = am4core.create("vfaChart", am4charts.XYChart);
+                    this.chart = chart;
+
+                    // 현재 탭 데이터 적용
+                    chart.data = this.chartData[this.period];
+
+                    // X축 (날짜)
+                    var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+
+                    this.applyDateAxisFormat(dateAxis);
+                    dateAxis.renderer.grid.template.disabled = true;
+                    dateAxis.renderer.line.strokeOpacity = 0;
+                    dateAxis.renderer.ticks.template.disabled = true;
+
+                    dateAxis.tooltip.disabled = true;
+                    dateAxis.cursorTooltipEnabled = false;
+                    dateAxis.renderer.tooltipLocation = 0;
+
+
+                    dateAxis.renderer.labels.template.fill = am4core.color("#999");
+
+                    // Y축 (%)
+                    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+                    valueAxis.title.fill = am4core.color("#999"); // 글자색 (디자인 맞춤)
+                    valueAxis.title.fontSize = 12;
+                    valueAxis.renderer.grid.template.strokeDasharray = "3,3";
+                    valueAxis.renderer.labels.template.fill = am4core.color("#999");
+                    valueAxis.renderer.opposite = true;
+                    valueAxis.renderer.grid.template.disabled = true;  // 가로선 제거
+                    valueAxis.renderer.line.strokeOpacity = 0;         // 축 라인 제거
+                    valueAxis.renderer.ticks.template.disabled = true; // 눈금 제거
+                    //Y축 검은 박스 제거
+                    valueAxis.tooltip.disabled = true;
+                    valueAxis.cursorTooltipEnabled = false;
+
+                    // ===== 벤치마크 (검정 라인) =====
+                    var benchmarkSeries = chart.series.push(new am4charts.LineSeries());
+                    benchmarkSeries.dataFields.valueY = "benchmark";
+                    benchmarkSeries.dataFields.dateX = "date";
+                    benchmarkSeries.name = "벤치마크";
+                    benchmarkSeries.strokeWidth = 2;
+                    benchmarkSeries.stroke = am4core.color("#000000");
+                    benchmarkSeries.tooltip.disabled = true;
+                    //benchmarkSeries.tooltipText = "{dateX.formatDate('yyyy/MM')}\n벤치마크 : {valueY}%";
+                    //benchmarkSeries.tensionX = 0;
+
+
+                    // ===== 알고리즘 (초록 라인) =====
+                    var algoSeries = chart.series.push(new am4charts.LineSeries());
+                    algoSeries.dataFields.valueY = "algorithm";
+                    algoSeries.dataFields.dateX = "date";
+                    algoSeries.name = "알고리즘";
+                    algoSeries.strokeWidth = 2;
+                    algoSeries.stroke = am4core.color("#2ecc71"); // 초록색
+                    algoSeries.tooltip.disabled = true;
+                    //algoSeries.tooltipText = "{dateX.formatDate('yyyy/MM')}\n알고리즘 : {valueY}%";
+                    //algoSeries.tensionX = 0;
+
+                    var tooltipSeries = chart.series.push(new am4charts.LineSeries());
+                    tooltipSeries.dataFields.dateX = "date";
+                    tooltipSeries.dataFields.valueY = "algorithm"; // 아무 값이나 기준
+                    tooltipSeries.strokeOpacity = 0; // 선 안보이게
+                    tooltipSeries.fillOpacity = 0;
+                    tooltipSeries.tooltip.getFillFromObject = false;
+                    tooltipSeries.tooltip.background.fill = am4core.color("#F5F5F5"); // 파란 툴팁 배경
+                    tooltipSeries.tooltip.label.fill = am4core.color("#000000");
+                    tooltipSeries.tooltip.pointerOrientation = "vertical";
+
+                    // 통합 툴팁
+                    tooltipSeries.tooltipText =
+                        "{dateX.formatDate('yyyy/MM')}\n" +
+                        "[#000000]● 벤치마크 : {benchmark}%[/]\n" +
+                        "[#2ecc71]● [#000000]알고리즘 : {algorithm}%[/]";
+
+
+                    // 커서 (툴팁 따라다니는 십자선)
+                    chart.cursor = new am4charts.XYCursor();
+                    chart.cursor.lineY.disabled = true;
+                    chart.cursor.xAxis = null;
+                    chart.cursor.yAxis = null;
+                    chart.cursor.lineX.disabled = true;
+                    chart.cursor.lineY.disabled = true;
+
+                    // 범례 제거
+                    chart.legend = null;
+
+                    // 애니메이션
+                    benchmarkSeries.appear(1000);
+                    algoSeries.appear(1000);
+                    chart.appear(1000, 100);
+                },
+
+
+                updateChart() {
+                    if (!this.chart) return;
+
+                    this.chart.data = this.chartData[this.period] || [];
+
+                    if (this.chart.xAxes && this.chart.xAxes.length > 0) {
+                        const dateAxis = this.chart.xAxes.getIndex(0);
+                        this.applyDateAxisFormat(dateAxis);
+                    }
+
+                    this.chart.invalidateRawData();
+                },
+
+                applyDateAxisFormat(dateAxis) {
+
+                    if (this.period === 'all') {
+
+                        dateAxis.baseInterval = {
+                            timeUnit: "month",
+                            count: 1
+                        };
+
+                        dateAxis.gridIntervals.setAll([
+                            { timeUnit: "year", count: 1 }
+                        ]);
+
+                        dateAxis.dateFormats.setKey("year", "yyyy");
+                        dateAxis.dateFormats.setKey("month", "yyyy");
+
+                        dateAxis.periodChangeDateFormats.setKey("year", "yyyy");
+                        dateAxis.periodChangeDateFormats.setKey("month", "yyyy");
+
+                        dateAxis.renderer.minGridDistance = 90;
+                    }
+                    else {
+
+                        dateAxis.baseInterval = {
+                            timeUnit: "month",
+                            count: 1
+                        };
+
+                        let monthCount = 1;
+
+                        if (this.period === "6m") {
+                            monthCount = 1;
+                        }
+                        else if (this.period === "1y") {
+                            monthCount = 2;
+                        }
+                        else if (this.period === "3y") {
+                            monthCount = 6;
+                        }
+
+                        dateAxis.gridIntervals.setAll([
+                            { timeUnit: "month", count: monthCount }
+                        ]);
+
+                        // 전체가 아닌 경우 모두 yy.MM
+                        dateAxis.dateFormats.setKey("day", "yy.MM");
+                        dateAxis.dateFormats.setKey("month", "yy.MM");
+                        dateAxis.dateFormats.setKey("year", "yy.MM");
+
+                        dateAxis.periodChangeDateFormats.setKey("day", "yy.MM");
+                        dateAxis.periodChangeDateFormats.setKey("month", "yy.MM");
+                        dateAxis.periodChangeDateFormats.setKey("year", "yy.MM");
+
+                        dateAxis.renderer.minGridDistance = 60;
+                    }
+                },
+
+                deleteFund() {
+                    // 카카오 진입 시 차단 (UI 숨김 + 함수 가드 이중 방어)
+                    if (this.isKakao) return;
+
+                    var params = JSON.stringify({
+                        target: "VFANew", cmd: "MemberContractDel",
+                        id: this.id
+                    });
+
+                    httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                alert("정상적으로 취소 되었습니다.");
+                                location.href = 'Main.html';
+
+                            } else { alert(json.msg); }
+                        })
+                        .catch((error) => VueAlert(error));
+
+                },
+
+                goCorpUrl() {
+
+                    if (!this.corp_url) {
+                        alert('홈페이지 정보가 없습니다.');
+                        return;
+                    }
+
+                    window.open(this.corp_url, '_blank');
+                },
+
+                callCorpTel() {
+
+                    if (!this.corp_tel) {
+                        alert('고객센터 정보가 없습니다.');
+                        return;
+                    }
+
+                    location.href = 'tel:' + this.corp_tel.replace(/-/g, '');
+                },
+
+                sendSMS() {
+                    const phoneNumber = this.info.member_mobile;
+                    window.location.href = `sms:${phoneNumber}`;
+                },
+
+                callFA() {
+                    const phoneNumber = this.info.member_mobile;
+                    window.location.href = `tel:${phoneNumber}`;
+
+                },
+
+                goDna() {
+                    var url = 'https://www.dna.uno/';
+                    window.open(url);
+                },
+
+                goRAI() {
+                    var url = 'http://www.robo-advisor.co.kr/';
+                    window.open(url);
+                },
+
+                goPrev() {
+                    // 카카오 진입 시 차단 (UI 숨김 + 함수 가드 이중 방어)
+                    if (this.isKakao) return;
+
+                    history.go(-1);
+
+                },
+                toggleFaq(index) {
+                    this.openFaq =
+                        this.openFaq === index ? -1 : index;
+                }
+
+            },
+            computed: {
+                 rebalancingViewList() {
+                    if (!this.rebalancing || this.rebalancing.length === 0) return [];
+
+                    const groupMap = {};
+
+                    // 날짜별 그룹핑
+                    this.rebalancing.forEach(item => {
+                        const date = item.std_date || "";
+
+                        if (!groupMap[date]) {
+                            groupMap[date] = [];
+                        }
+
+                        groupMap[date].push(item);
+                    });
+
+                    // 날짜 오름차순 정렬 (과거 -> 최신)
+                    const sortedDates = Object.keys(groupMap).sort((a, b) => {
+                        return new Date(a) - new Date(b);
+                    });
+
+                    if (sortedDates.length === 0) return [];
+
+                    // 오늘 기준 가장 가까운 날짜 찾기
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    let currentDate = "";
+                    let minDiff = Number.MAX_SAFE_INTEGER;
+
+                    sortedDates.forEach(date => {
+                        const targetDate = new Date(date);
+                        targetDate.setHours(0, 0, 0, 0);
+
+                        const diff = Math.abs(today.getTime() - targetDate.getTime());
+
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            currentDate = date;
+                        }
+                    });
+
+                    // 현재 제외한 날짜들만 과거순으로 회차 부여
+                    const roundMap = {};
+                    let round = 1;
+
+                    sortedDates.forEach(date => {
+                        if (date !== currentDate) {
+                            roundMap[date] = round + "회";
+                            round++;
+                        }
+                    });
+
+                    // 화면용 배열 생성
+                    const result = sortedDates.map(date => {
+                        return {
+                            std_date: date,
+                            label: date === currentDate ? "현재" : roundMap[date],
+                            items: groupMap[date]
+                        };
+                    });
+
+                    // 출력 순서: 현재 > 나머지 최신순
+                    return result.sort((a, b) => {
+                        if (a.label === "현재") return -1;
+                        if (b.label === "현재") return 1;
+
+                        return new Date(b.std_date) - new Date(a.std_date);
+                    });
+                },
+
+                rebalancingCount() {
+                    if (!this.rebalancing || this.rebalancing.length === 0) return 0;
+
+                    const dateSet = new Set();
+
+                    this.rebalancing.forEach(item => {
+                        if (item.std_date) {
+                            dateSet.add(item.std_date);
+                        }
+                    });
+
+                    return dateSet.size;
+                },
+
+
+                currentData() {
+                    return this.vfaData[this.period];
+                },
+                periodLabel() {
+                    const map = {
+                        '6m': '6개월',
+                        '1y': '1년',
+                        '3y': '3년',
+                        'all': '전체'
+                    };
+                    return map[this.period];
+                },
+                totalPaid() {
+                    return this.monthlyPremium * this.currentData.months;
+                },
+                benchmarkAsset() {
+                    return Math.round(this.totalPaid * (1 + this.currentData.benchmark / 100));
+                },
+                algorithmAsset() {
+                    return Math.round(this.totalPaid * (1 + this.currentData.algorithm / 100));
+                },
+                monthlyPremiumText() {
+                    return (this.monthlyPremium / 10000).toLocaleString() + '만';
+                },
+                totalPaidText() {
+                    return (this.totalPaid / 10000).toLocaleString() + '만';
+                },
+                benchmarkAssetText() {
+                    return Math.round(this.benchmarkAsset / 10000).toLocaleString() + '만';
+                },
+                algorithmAssetText() {
+                    return Math.round(this.algorithmAsset / 10000).toLocaleString() + '만';
+                },
+                profitDiff() {
+                    return this.algorithmAsset - this.benchmarkAsset;
+                },
+
+                profitDiffText() {
+                    return Math.abs(Math.round(this.profitDiff / 10000)).toLocaleString() + '만';
+                },
+
+                profitDiffLabel() {
+                    return this.profitDiff >= 0 ? '이익' : '손실';
+                },
+
+            }
+
+        });
+    </script>
+</body>
+</html>

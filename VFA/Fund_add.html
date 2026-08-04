@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="vendor/Scripts/common.js"></script>
+    <script src="vendor/Common/common2.js"></script>
+    <script src="vendor/Scripts/vue@2.3.3/vue.min.js"></script>
+    <script src="Scripts/vfa-mock-api.js"></script>
+    <link href="assets/CSS/reset.css" rel="stylesheet" />
+    <link href="assets/CSS/vfa.css" rel="stylesheet" />
+    
+    <script src="vendor/Scripts/vue2-datepicker@3.2.1/index.min.js"></script>
+    <script src="vendor/Scripts/vue2-datepicker@3.2.1/locale/ko.js"></script>
+    <link rel="stylesheet" href="vendor/Styles/vue2-datepicker@3.6.2/index.css" />
+    
+    <style type="text/css">
+        .mx-datepicker-popup {
+top: 515px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+        }
+
+        .input_birth {
+            display: flex;
+            align-items: center;
+        }
+
+        .calendar_birth {
+            position: relative;
+        }
+
+        .calendar_birth img {
+width: 18px;
+    position: absolute;
+    top: -51px;
+    right: 10px;
+        }
+    </style>
+    <script type="text/javascript">
+        Vue.use(DatePicker);
+    </script>
+    <title>VFA</title>
+</head>
+<body>
+    <form id="form1">
+        <input type="hidden" id="sID" value="demo.vfa@example.com">
+        <div class="wrap main" id="divVue">
+            <div class="header">
+                <div>
+                    <img src="assets/Images/ic_back.svg" class="ic_close" onclick="history.go(-1);" alt="뒤로 가기" />
+                </div>
+                <p class="m_title_b">변액보험 상품 추가하기</p>
+                <div class="df">
+                    
+
+                </div>
+            </div>
+            <div class="g_sec ">
+
+
+                <div class="txtBox_white bm20">
+                    <img src="assets/Images/main_img5.svg" class="" alt="VFA 지원 상품 안내" />
+                    <p class="m_text_l c_55 tac bm5">VFA는 현재 <span class="c_black">각 보험사별 대표 저축성 변액보험 상품 2~3종을 우선 지원</span>하고 있어요.</p>
+                    <p class="m_text_l c_55 tac">미지원 상품은 <span class="c_green">향후 업데이트를 통해 계속 확대될 예정</span>입니다.</p>
+                    <div class="line bm20"></div>
+                    <div class="df_fs bm5">
+                        <p class="m_text_b">서비스 가능 상품 : </p>
+                        <p class="m_text_l">변액연금보험, 변액유니버셜보험</p>
+                    </div>
+                    <div class="df_fs">
+                        <p class="m_text_b">서비스 불가 상품 : </p>
+                        <p class="m_text_l">변액종신보험</p>
+                    </div>
+
+                </div>
+                <p class="lg_text_l bm5">보험사 선택</p>
+                <select class="bm20" v-model="selectedCorp" @change="getVFAItem();">
+                    <option value="">선택하세요.</option>
+                    <option v-for="corp in corpList"
+                            :key="corp.id"
+                            :value="corp.corp_code">
+                        {{ corp.corp_name }}
+                    </option>
+                </select>
+                <p class="lg_text_l bm5">상품 선택</p>
+                <select class="bm20" v-model="selectedItem">
+                    <option value="">선택하세요.</option>
+                    <option v-for="item in items_list" :value="item">{{item.item_display_name}}</option>
+                </select>
+                <p class="lg_text_l bm5">계약일자</p>
+
+                <input type="text" readonly @click="togglePicker()" class="input_date bm20" :max="today" v-model="contract_date"/>
+                <div class="calendar_birth" @click="togglePicker()"><img src="assets/icons/calendar.png" /></div>
+                <date-picker
+                    v-model="contract_date"
+                    :lang="datePicker.lang" 
+                    firstDayOfWeek="1"
+                    placeholder="CALL DATEPICKER"
+                    :open="datePicker.status.contract_date" value-type="format"
+                    format="YYYY-MM-DD" style="display: none"
+                    @change="datePicker.status.contract_date = false">
+                </date-picker>
+                <div class="df_btn">
+                <div class="btn3 c_fff l_title_b" onclick="location.reload();">초기화</div>
+                <div class="btn4 c_fff l_title_b" @click="addFund();">저장</div>
+
+                </div>
+
+            </div>
+
+             <div class="popup_wrap " :class="{ on: addPop }">
+                <div class="p_box alert">
+                    <div class="innerBox">
+                        <p class="l_title_b tac">변액보험 상품이<br />추가되었습니다.</p>
+                    </div>
+                    <div class="innerBox">
+                        <div class="df_btn">
+                            <div class="btn4 c_fff l_title_b" @click="location.href = 'Main.html';">확인</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="popup_wrap " :class="{ on: dupPop }">
+                <div class="p_box alert">
+                    <div class="innerBox">
+                        <p class="l_title_b tac">선택하신 상품은 이미 등록되어 있어요.<br />동일한 상품은 중복 등록할 수 없습니다.</p>
+                    </div>
+                    <div class="innerBox">
+                        <div class="df_btn">
+                            <div class="btn4 c_fff l_title_b" @click="dupPop = false;">확인</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </form>
+    <script>
+        var vm = new Vue({
+            el: "#divVue",
+            data: {
+                hrid: '',
+                member_id: '',
+                corpList: [],
+                selectedCorp: '',
+                selectedItem: null,
+
+                items_list: [],
+
+                today: '',
+                contract_date: '',
+
+                addPop: false,
+                dupPop: false,
+
+                datePicker: {
+                    lang: {
+                        formatLocale: {
+                            firstDayOfWeek: 1,
+                        },
+                        monthBeforeYear: false,
+                    },
+                    status: {
+                        contract_date: false,
+                    },
+                },
+            },
+            created() {
+                this.member_id = document.getElementById("sID").value;
+                this.hrid = new URLSearchParams(location.search).get("hrid");
+                this.today = new Date().toISOString().slice(0, 10);
+
+                this.init();
+
+            },
+            methods: {
+                async init() {
+                    this.getCorpList();
+
+                },
+
+                async getCorpList() {
+                    var params = JSON.stringify({
+                        target: "VFANew", cmd: "VFACorpList"
+
+                    });
+
+                    return httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.corpList = json.items;
+                            } else { alert(json.msg); }
+                        })
+                        .catch((error) => VueAlert(error));
+
+                },
+
+                getVFAItem() {
+                    var params = JSON.stringify({
+                        target: "VFANew", cmd: "VFAItemList",
+                        corp_code: this.selectedCorp
+
+                    });
+
+                    httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                this.items_list = json.items;
+                            } else { alert(json.msg); }
+                        })
+                        .catch((error) => VueAlert(error));
+
+                },
+
+                addFund() {
+                    if (this.selectedCorp === '') {
+                        alert("보험사를 선택해주세요.");
+                        return;
+                    }
+
+                    if (!this.selectedItem) {
+                        alert("상품을 선택해주세요.");
+                        return
+                    }
+
+                    if (this.contract_date === '') {
+                        alert("계약 일자를 선택해주세요.");
+                        return;
+
+                    }
+
+                    var params = JSON.stringify({
+                        target: "VFANew",
+                        cmd: "MemberContractAdd",
+                        member_id: this.member_id,
+                        corp_name: this.selectedItem.corp_name,
+                        ifa_item_code: this.selectedItem.ifa_item_code,
+                        item_code: this.selectedItem.item_code,
+                        item_name: this.selectedItem.item_display_name,
+                        contract_date: this.contract_date
+                    });
+
+                    console.log(params);
+
+                    httpPost(urlReturnJsonAPI, params)
+                        .then((json) => {
+                            if (json.result == 1) {
+                                var item = json.items[0];
+                                console.log(item);
+                                if (item.result === 'OK') {
+                                    this.addPop = true;
+                                    
+
+                                }
+                                else if (item.result === 'DUP') {
+                                    this.dupPop = true;
+
+                                }
+                            } else { alert(json.msg); }
+                        })
+                        .catch((error) => VueAlert(error));
+
+                },
+
+                togglePicker() {
+                    this.datePicker.status.contract_date = !this.datePicker.status.contract_date;
+                },
+
+            }
+
+        });
+
+    </script>
+</body>
+</html>
+
+
