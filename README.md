@@ -6,7 +6,7 @@
 
 - 포트폴리오: https://0378hajin.github.io/WebDemo/
 - AI Link: https://0378hajin.github.io/WebDemo/AILink.html
-- AI Link 실제 운영 서비스: https://www.ifa.co.kr/H026
+- AI Link 실제 운영 서비스: https://www.ifa.co.kr/F000
 - MediCode: https://0378hajin.github.io/WebDemo/MediCode/Intro.html
 - VFA: https://0378hajin.github.io/WebDemo/VFA/Main.html
 
