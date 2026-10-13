@@ -2,6 +2,12 @@
 
 실무에서 개발한 AI Link, MediCode, VFA의 화면 및 데이터 흐름을 개인정보와 운영 인증정보 없이 재구성한 정적 데모입니다.
 
+**실무 프로젝트 기술**
+
+[![ASP.NET Web Forms](https://img.shields.io/badge/ASP.NET_Web_Forms-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://learn.microsoft.com/aspnet/web-forms/)
+[![Vue.js 2](https://img.shields.io/badge/Vue.js_2-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white)](https://v2.vuejs.org/)
+[![MS-SQL](https://img.shields.io/badge/MS--SQL-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)](https://www.microsoft.com/sql-server)
+
 ## 라이브 데모
 
 - 포트폴리오: https://0378hajin.github.io/WebDemo/
